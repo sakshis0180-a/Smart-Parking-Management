@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>GPS Location in Maps | Smart Parking</title>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#f4f8ff;
+    color:#243650;
+    min-height:100vh;
+}
+
+a{text-decoration:none}
+
+.sidebar{
+    position:fixed;
+    left:0;top:0;
+    width:105px;height:100vh;
+    background:#fff;
+    padding:14px 8px;
+    z-index:1000;
+    border-right:1px solid #dce8f5;
+}
+
+.sidebar-logo{
+    display:flex;
+    align-items:center;
+    gap:5px;
+    padding:3px 4px 18px;
+    color:#243650;
+    font-size:10px;
+    font-weight:700;
+    white-space:nowrap;
+}
+
+.sidebar-logo-icon{
+    width:22px;height:22px;
+    border:2px solid #278bd0;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
+    color:#278bd0;
+}
+
+.sidebar-menu{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+}
+
+.sidebar-menu a{
+    color:#526780;
+    display:flex;
+    align-items:center;
+    gap:7px;
+    padding:8px 7px;
+    border-radius:5px;
+    font-size:8px;
+    transition:.25s;
+}
+
+.sidebar-menu a:hover,
+.sidebar-menu a.active{
+    background:#e4f3ff;
+    color:#168bd2;
+}
+
+.menu-icon{
+    width:15px;
+    text-align:center;
+    font-size:10px;
+}
+
+.main{
+    margin-left:105px;
+    min-height:100vh;
+    padding:28px 38px;
+}
+
+.page-heading-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:20px;
+}
+
+.page-heading h1{
+    font-size:24px;
+    color:#243650;
+    margin-bottom:6px;
+}
+
+.page-heading p{
+    color:#71869d;
+    font-size:11px;
+}
+
+.nav-buttons{
+    display:flex;
+    gap:8px;
+}
+
+.next-button,.back-button{
+    display:inline-block;
+    padding:9px 14px;
+    border-radius:5px;
+    font-size:9px;
+    font-weight:600;
+    transition:.25s;
+    white-space:nowrap;
+}
+
+.next-button{
+    background:#278bd0;
+    color:white;
+}
+
+.back-button{
+    background:#e4f3ff;
+    color:#168bd2;
+    border:1px solid #c5dced;
+}
+
+.next-button:hover,.back-button:hover{
+    transform:translateY(-2px);
+    box-shadow:0 5px 12px rgba(39,139,208,.18);
+}
+
+.map-card{
+    position:relative;
+    width:100%;
+    height:490px;
+    border:1px solid #c5dced;
+    border-radius:7px;
+    overflow:hidden;
+    background:#e5f2ff;
+    box-shadow:0 5px 18px rgba(23,32,51,.08);
+}
+
+#map{width:100%;height:100%}
+
+.location-panel{
+    position:absolute;
+    top:15px;left:15px;
+    width:225px;
+    max-height:420px;
+    overflow-y:auto;
+    background:rgba(255,255,255,.97);
+    border-radius:7px;
+    padding:15px;
+    z-index:500;
+    box-shadow:0 5px 18px rgba(23,32,51,.18);
+}
+
+.location-panel h2{
+    font-size:13px;
+    margin-bottom:10px;
+}
+
+.coordinates{
+    font-size:9px;
+    color:#71869d;
+    margin-bottom:13px;
+    line-height:1.7;
+    white-space:pre-line;
+}
+
+.nearby-title{
+    font-size:11px;
+    font-weight:700;
+    margin-bottom:9px;
+}
+
+.parking-item{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    padding:9px 5px;
+    border-bottom:1px solid #edf0f4;
+    cursor:pointer;
+    border-radius:4px;
+}
+
+.parking-item:hover,.parking-item.selected{
+    background:#e4f3ff;
+}
+
+.parking-item.selected{
+    border-left:3px solid #278bd0;
+}
+
+.parking-left{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    min-width:0;
+}
+
+.parking-dot{
+    width:8px;height:8px;
+    border-radius:50%;
+    background:#278bd0;
+    flex-shrink:0;
+}
+
+.parking-name{
+    font-size:9px;
+    color:#334155;
+    overflow-wrap:anywhere;
+}
+
+.parking-distance{
+    font-size:8px;
+    color:#64748b;
+    white-space:nowrap;
+}
+
+.direction-btn{
+    width:100%;
+    margin-top:12px;
+    border:none;
+    background:#278bd0;
+    color:white;
+    padding:9px 10px;
+    border-radius:4px;
+    font-size:10px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.direction-btn:hover{background:#1679bd}
+
+.direction-btn:disabled{
+    background:#94a3b8;
+    cursor:not-allowed;
+}
+
+.detect-btn{
+    position:absolute;
+    top:15px;right:15px;
+    z-index:500;
+    border:none;
+    background:#278bd0;
+    color:white;
+    padding:9px 12px;
+    border-radius:5px;
+    font-size:9px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.detect-btn:hover{background:#1679bd}
+
+.parking-marker,.current-location-marker{
+    background:transparent;
+    border:none;
+}
+
+.parking-pin{
+    width:32px;height:32px;
+    border-radius:50%;
+    background:#278bd0;
+    color:white;
+    border:3px solid white;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+    font-weight:700;
+    box-shadow:0 3px 10px rgba(37,99,235,.4);
+}
+
+.current-location-dot{
+    width:18px;height:18px;
+    border-radius:50%;
+    background:#16a34a;
+    border:3px solid white;
+    box-shadow:0 0 0 5px rgba(22,163,74,.18);
+}
+
+.map-status{
+    position:absolute;
+    bottom:12px;left:50%;
+    transform:translateX(-50%);
+    z-index:500;
+    background:rgba(255,255,255,.96);
+    padding:8px 13px;
+    border-radius:20px;
+    font-size:9px;
+    color:#475569;
+    box-shadow:0 3px 10px rgba(0,0,0,.12);
+    text-align:center;
+    max-width:90%;
+}
+
+.selected-info{
+    margin-top:10px;
+    padding:9px;
+    background:#edf7ff;
+    border-radius:5px;
+    display:none;
+}
+
+.selected-info strong{
+    display:block;
+    font-size:10px;
+    margin-bottom:5px;
+}
+
+.selected-info p{
+    font-size:9px;
+    color:#64748b;
+    line-height:1.5;
+}
+
+@media(max-width:800px){
+    .sidebar{width:78px}
+    .sidebar-logo{justify-content:center}
+    .sidebar-logo span{display:none}
+    .sidebar-menu a{justify-content:center}
+    .sidebar-menu a span:not(.menu-icon){display:none}
+    .main{margin-left:78px;padding:22px 15px}
+    .location-panel{width:190px}
+}
+
+@media(max-width:600px){
+    .main{padding:18px 10px}
+    .page-heading-row{
+        align-items:flex-start;
+        gap:12px;
+        flex-direction:column;
+    }
+    .page-heading h1{font-size:20px}
+    .nav-buttons{flex-wrap:wrap}
+    .map-card{height:550px}
+    .location-panel{
+        top:10px;left:10px;
+        width:180px;max-height:390px;
+        padding:12px;
+    }
+    .detect-btn{top:10px;right:10px}
+}
+</style>
+</head>
+
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <div class="sidebar-logo-icon">P</div>
+        <span>Smart Parking</span>
+    </div>
+
+    <div class="sidebar-menu">
+        <a href="{{ url_for('location') }}" class="active">
+            <span class="menu-icon">⌖</span>
+            <span>Find Parking</span>
+        </a>
+    </div>
+</aside>
+
+<main class="main">
+
+    <div class="page-heading-row">
+        <div class="page-heading">
+            <h1>GPS Location in Maps</h1>
+            <p>Track your current location and find nearby parking areas.</p>
+        </div>
+
+        <div class="nav-buttons">
+            <a href="{{ url_for('vehicles') }}" class="back-button">
+                ← Back to Vehicles
+            </a>
+
+            <a href="{{ url_for('parking_slots') }}" class="next-button">
+                Next → Parking Slots
+            </a>
+        </div>
+    </div>
+
+    <section class="map-card">
+
+        <div class="location-panel">
+
+            <h2>📍 Your Location</h2>
+
+            <p class="coordinates" id="locationText">
+                Click Use My Location to detect your GPS location.
+            </p>
+
+            <div class="nearby-title">Nearby Parking Areas</div>
+
+            <div id="parkingList">
+                <p class="coordinates">
+                    Waiting for your location...
+                </p>
+            </div>
+
+            <div class="selected-info" id="selectedInfo">
+                <strong id="selectedName"></strong>
+                <p id="selectedDistance"></p>
+            </div>
+
+            <button
+                type="button"
+                class="direction-btn"
+                id="navigationButton"
+                onclick="startNavigation()"
+                disabled>
+                Start Navigation
+            </button>
+
+        </div>
+
+        <button
+            type="button"
+            class="detect-btn"
+            id="detectButton"
+            onclick="getLocation()">
+            📍 Use My Location
+        </button>
+
+        <div id="map"></div>
+
+        <div class="map-status" id="mapStatus">
+            Map ready. Click Use My Location.
+        </div>
+
+    </section>
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+"use strict";
+
+// Initial map position only.
+// This is NOT the user's detected location.
+
+const map = L.map("map").setView([18.5204,73.8567],12);
+
+L.tileLayer(
+    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+    {
+        maxZoom:19,
+        attribution:"&copy; OpenStreetMap contributors"
+    }
+).addTo(map);
+
+setTimeout(function(){
+    map.invalidateSize();
+},300);
+
+
+// Map icons
+
+const parkingIcon = L.divIcon({
+    className:"parking-marker",
+    html:'<div class="parking-pin">P</div>',
+    iconSize:[32,32],
+    iconAnchor:[16,16]
+});
+
+const currentIcon = L.divIcon({
+    className:"current-location-marker",
+    html:'<div class="current-location-dot"></div>',
+    iconSize:[18,18],
+    iconAnchor:[9,9]
+});
+
+
+// Variables
+
+let currentLocation = null;
+let userMarker = null;
+let accuracyCircle = null;
+let routeLine = null;
+let parkingMarkers = [];
+let parkingLocations = [];
+let selectedParking = null;
+let searching = false;
+let lastSearchLocation = null;
+let watchId = null;
+
+
+// HTML elements
+
+const locationText = document.getElementById("locationText");
+const mapStatus = document.getElementById("mapStatus");
+const parkingList = document.getElementById("parkingList");
+const selectedInfo = document.getElementById("selectedInfo");
+const selectedName = document.getElementById("selectedName");
+const selectedDistance = document.getElementById("selectedDistance");
+const navigationButton = document.getElementById("navigationButton");
+const detectButton = document.getElementById("detectButton");
+
+
+// Distance calculation
+
+function calculateDistance(lat1,lon1,lat2,lon2){
+
+    const R = 6371;
+
+    const dLat = (lat2-lat1)*Math.PI/180;
+    const dLon = (lon2-lon1)*Math.PI/180;
+
+    const a =
+        Math.sin(dLat/2)**2 +
+        Math.cos(lat1*Math.PI/180) *
+        Math.cos(lat2*Math.PI/180) *
+        Math.sin(dLon/2)**2;
+
+    return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+
+function formatDistance(distance){
+
+    if(distance < 1){
+        return Math.round(distance*1000)+" m";
+    }
+
+    return distance.toFixed(2)+" km";
+}
+
+
+function escapeHTML(value){
+
+    return String(value).replace(/[&<>"']/g,function(c){
+        return {
+            "&":"&amp;",
+            "<":"&lt;",
+            ">":"&gt;",
+            '"':"&quot;",
+            "'":"&#039;"
+        }[c];
+    });
+}
+
+
+// Clear old markers
+
+function clearParkingMarkers(){
+
+    parkingMarkers.forEach(function(marker){
+        map.removeLayer(marker);
+    });
+
+    parkingMarkers = [];
+    parkingLocations = [];
+    selectedParking = null;
+
+    selectedInfo.style.display = "none";
+    navigationButton.disabled = true;
+
+    if(routeLine){
+        map.removeLayer(routeLine);
+        routeLine = null;
+    }
+}
+
+
+// Display nearby parking list
+
+function displayParkingList(){
+
+    parkingList.innerHTML = "";
+
+    if(parkingLocations.length === 0){
+        parkingList.innerHTML =
+            '<p class="coordinates">No mapped parking locations found.</p>';
+        return;
+    }
+
+    parkingLocations.slice(0,30).forEach(function(parking){
+
+        const item = document.createElement("div");
+        item.className = "parking-item";
+
+        if(selectedParking && selectedParking.id === parking.id){
+            item.classList.add("selected");
+        }
+
+        const left = document.createElement("div");
+        left.className = "parking-left";
+
+        const dot = document.createElement("span");
+        dot.className = "parking-dot";
+
+        const name = document.createElement("span");
+        name.className = "parking-name";
+        name.textContent = parking.name;
+
+        const distance = document.createElement("span");
+        distance.className = "parking-distance";
+        distance.textContent = formatDistance(parking.distance);
+
+        left.appendChild(dot);
+        left.appendChild(name);
+
+        item.appendChild(left);
+        item.appendChild(distance);
+
+        item.addEventListener("click",function(){
+            selectParking(parking);
+        });
+
+        parkingList.appendChild(item);
+    });
+}
+
+
+// Select a parking location
+
+function selectParking(parking){
+
+    if(!currentLocation)return;
+
+    selectedParking = parking;
+
+    if(routeLine){
+        map.removeLayer(routeLine);
+        routeLine = null;
+    }
+
+    selectedName.textContent = parking.name;
+
+    selectedDistance.textContent =
+        "Straight-line distance: "+formatDistance(parking.distance);
+
+    selectedInfo.style.display = "block";
+    navigationButton.disabled = false;
+
+    map.setView([parking.lat,parking.lng],16);
+
+    L.popup()
+        .setLatLng([parking.lat,parking.lng])
+        .setContent(
+            "<strong>"+escapeHTML(parking.name)+"</strong><br>"+
+            "Distance: "+formatDistance(parking.distance)
+        )
+        .openOn(map);
+
+    mapStatus.innerText =
+        "Parking selected. Press Start Navigation.";
+
+    displayParkingList();
+}
+
+
+// Add parking marker
+
+function addParkingMarker(parking){
+
+    const marker = L.marker(
+        [parking.lat,parking.lng],
+        {icon:parkingIcon}
+    ).addTo(map);
+
+    const popup = document.createElement("div");
+
+    const title = document.createElement("strong");
+    title.textContent = parking.name;
+
+    const distance = document.createElement("p");
+    distance.textContent =
+        "Distance: "+formatDistance(parking.distance);
+
+    const capacity = document.createElement("p");
+    capacity.textContent =
+        "Capacity: "+parking.capacity;
+
+    const button = document.createElement("button");
+    button.textContent = "Select Parking";
+
+    button.style.cssText =
+        "margin-top:8px;padding:7px 12px;background:#278bd0;color:white;border:0;border-radius:4px;cursor:pointer";
+
+    button.addEventListener("click",function(){
+        selectParking(parking);
+    });
+
+    popup.appendChild(title);
+    popup.appendChild(distance);
+    popup.appendChild(capacity);
+    popup.appendChild(button);
+
+    marker.bindPopup(popup);
+
+    marker.on("click",function(){
+        selectParking(parking);
+    });
+
+    parkingMarkers.push(marker);
+}
+
+
+// Search parking through OpenStreetMap
+
+async function loadNearbyParking(){
+
+    if(!currentLocation || searching)return;
+
+    searching = true;
+
+    clearParkingMarkers();
+
+    mapStatus.innerText =
+        "Searching real mapped parking locations within 20 km...";
+
+    parkingList.innerHTML =
+        '<p class="coordinates">Searching nearby parking areas...</p>';
+
+    const lat = currentLocation[0];
+    const lng = currentLocation[1];
+
+    // Search several common OSM parking tags.
+
+    const query = `
+        [out:json][timeout:35];
+        (
+          node["amenity"="parking"](around:20000,${lat},${lng});
+          way["amenity"="parking"](around:20000,${lat},${lng});
+          relation["amenity"="parking"](around:20000,${lat},${lng});
+
+          node["parking"="surface"](around:20000,${lat},${lng});
+          way["parking"="surface"](around:20000,${lat},${lng});
+
+          node["parking"="underground"](around:20000,${lat},${lng});
+          way["parking"="underground"](around:20000,${lat},${lng});
+
+          node["parking"="multi-storey"](around:20000,${lat},${lng});
+          way["parking"="multi-storey"](around:20000,${lat},${lng});
+        );
+        out center tags;
+    `;
+
+    const servers = [
+        "https://overpass-api.de/api/interpreter",
+        "https://overpass.kumi.systems/api/interpreter",
+        "https://overpass.nchc.org.tw/api/interpreter"
+    ];
+
+    let data = null;
+    let lastError = null;
+
+    try{
+
+        for(const server of servers){
+
+            try{
+
+                const response = await fetch(server,{
+                    method:"POST",
+                    headers:{
+                        "Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"
+                    },
+                    body:"data="+encodeURIComponent(query),
+                    signal:AbortSignal.timeout(45000)
+                });
+
+                if(!response.ok){
+                    throw new Error("Server error: "+response.status);
+                }
+
+                data = await response.json();
+                break;
+
+            }catch(error){
+
+                console.log("Parking server error:",error);
+                lastError = error;
+            }
+        }
+
+        if(!data){
+            throw lastError || new Error("Parking search unavailable");
+        }
+
+        const unique = new Set();
+
+        (data.elements || []).forEach(function(item){
+
+            const pLat = item.lat ?? item.center?.lat;
+            const pLng = item.lon ?? item.center?.lon;
+
+            if(typeof pLat !== "number" || typeof pLng !== "number"){
+                return;
+            }
+
+            const id = item.type+"-"+item.id;
+
+            if(unique.has(id))return;
+            unique.add(id);
+
+            const tags = item.tags || {};
+
+            const parking = {
+                id:id,
+                name:tags.name || tags.operator || "Parking Area",
+                lat:pLat,
+                lng:pLng,
+                capacity:tags.capacity || "Not available",
+                distance:calculateDistance(lat,lng,pLat,pLng)
+            };
+
+            parkingLocations.push(parking);
+        });
+
+
+        parkingLocations.sort(function(a,b){
+            return a.distance-b.distance;
+        });
+
+
+        parkingLocations.forEach(addParkingMarker);
+
+        displayParkingList();
+
+
+        if(parkingLocations.length === 0){
+
+            mapStatus.innerText =
+                "No mapped parking found within 20 km.";
+
+            parkingList.innerHTML =
+                '<p class="coordinates">No parking areas are mapped in OpenStreetMap within 20 km. This does not mean real parking areas do not exist.</p>';
+
+        }else{
+
+            mapStatus.innerText =
+                parkingLocations.length+
+                " mapped parking areas found. Nearest: "+
+                formatDistance(parkingLocations[0].distance);
+
+            const points = [
+                currentLocation,
+                ...parkingLocations.slice(0,30).map(function(p){
+                    return [p.lat,p.lng];
+                })
+            ];
+
+            map.fitBounds(points,{
+                padding:[40,40],
+                maxZoom:15
+            });
+        }
+
+        lastSearchLocation = [...currentLocation];
+
+    }catch(error){
+
+        console.error("Parking search error:",error);
+
+        mapStatus.innerText =
+            "Parking service unavailable. Please try again.";
+
+        parkingList.innerHTML =
+            '<p class="coordinates">Could not connect to OpenStreetMap parking search. Check your internet and retry.</p>';
+
+    }finally{
+
+        searching = false;
+    }
+}
+
+
+// Update current GPS marker
+
+function updateCurrentLocation(position){
+
+    const lat = position.coords.latitude;
+    const lng = position.coords.longitude;
+    const accuracy = Math.round(position.coords.accuracy);
+
+    currentLocation = [lat,lng];
+
+    locationText.innerText =
+        "Latitude: "+lat.toFixed(6)+
+        "\nLongitude: "+lng.toFixed(6)+
+        "\nAccuracy: approximately "+accuracy+" meters";
+
+
+    if(userMarker){
+        userMarker.setLatLng(currentLocation);
+    }else{
+
+        userMarker = L.marker(
+            currentLocation,
+            {icon:currentIcon}
+        ).addTo(map);
+
+    }
+
+    userMarker.bindPopup(
+        "<strong>Your Current Location</strong><br>"+
+        "Accuracy: approximately "+accuracy+" meters"
+    );
+
+
+    if(accuracyCircle){
+        accuracyCircle.setLatLng(currentLocation);
+        accuracyCircle.setRadius(accuracy);
+    }else{
+
+        accuracyCircle = L.circle(currentLocation,{
+            radius:accuracy,
+            color:"#16a34a",
+            fillColor:"#16a34a",
+            fillOpacity:.10,
+            weight:2
+        }).addTo(map);
+
+    }
+
+    if(accuracy > 1000){
+
+        mapStatus.innerText =
+            "Location detected, but accuracy is low: "+
+            accuracy+" meters.";
+
+    }else{
+
+        mapStatus.innerText =
+            "Location updated. Checking nearby parking...";
+    }
+
+    // Recalculate distances after location changes.
+
+    parkingLocations.forEach(function(p){
+
+        p.distance = calculateDistance(
+            lat,lng,p.lat,p.lng
+        );
+
+    });
+
+    parkingLocations.sort(function(a,b){
+        return a.distance-b.distance;
+    });
+
+    displayParkingList();
+}
+
+
+// Detect GPS once
+
+function getLocation(){
+
+    if(!navigator.geolocation){
+
+        mapStatus.innerText =
+            "Your browser does not support GPS location.";
+
+        return;
+    }
+
+    detectButton.disabled = true;
+    detectButton.textContent = "Detecting GPS...";
+
+    locationText.innerText =
+        "Requesting your current location...";
+
+    mapStatus.innerText =
+        "Waiting for GPS permission...";
+
+
+    navigator.geolocation.getCurrentPosition(
+
+        async function(position){
+
+            updateCurrentLocation(position);
+
+            map.setView(currentLocation,16);
+
+            userMarker.openPopup();
+
+            await loadNearbyParking();
+
+            detectButton.disabled = false;
+            detectButton.textContent = "📍 Use My Location";
+        },
+
+        function(error){
+
+            let message = "Unable to detect your location.";
+
+            if(error.code === 1){
+                message =
+                    "Location permission denied. Allow location in Chrome.";
+            }else if(error.code === 2){
+                message =
+                    "Location unavailable. Check Windows location settings.";
+            }else if(error.code === 3){
+                message =
+                    "Location request timed out. Try again.";
+            }
+
+            locationText.innerText = message;
+            mapStatus.innerText = message;
+
+            detectButton.disabled = false;
+            detectButton.textContent = "📍 Use My Location";
+        },
+
+        {
+            enableHighAccuracy:true,
+            timeout:60000,
+            maximumAge:0
+        }
+    );
+}
+
+
+// Optional continuous location updates.
+// The browser may provide approximate desktop location.
+
+function startLiveLocation(){
+
+    if(!navigator.geolocation || watchId !== null){
+        return;
+    }
+
+    watchId = navigator.geolocation.watchPosition(
+
+        function(position){
+
+            updateCurrentLocation(position);
+
+            // Search again if the user has moved at least 500 metres.
+
+            if(lastSearchLocation && !searching){
+
+                const moved = calculateDistance(
+                    lastSearchLocation[0],
+                    lastSearchLocation[1],
+                    currentLocation[0],
+                    currentLocation[1]
+                );
+
+                if(moved >= 0.5){
+                    loadNearbyParking();
+                }
+            }
+        },
+
+        function(error){
+            console.log("Live GPS update:",error.message);
+        },
+
+        {
+            enableHighAccuracy:true,
+            maximumAge:5000,
+            timeout:30000
+        }
+    );
+}
+
+
+// Driving route through OSRM
+
+async function startNavigation(){
+
+    if(!currentLocation || !selectedParking){
+        mapStatus.innerText =
+            "First detect your location and select a parking area.";
+        return;
+    }
+
+    navigationButton.disabled = true;
+    navigationButton.textContent = "Finding Route...";
+
+    mapStatus.innerText = "Calculating driving route...";
+
+    const start =
+        currentLocation[1]+","+currentLocation[0];
+
+    const end =
+        selectedParking.lng+","+selectedParking.lat;
+
+    const routeURL =
+        "https://router.project-osrm.org/route/v1/driving/"+
+        start+";"+end+
+        "?overview=full&geometries=geojson";
+
+    try{
+
+        const response = await fetch(routeURL);
+
+        if(!response.ok){
+            throw new Error("Route server unavailable");
+        }
+
+        const data = await response.json();
+
+        if(!data.routes || !data.routes.length){
+            throw new Error("No driving route found");
+        }
+
+        const route = data.routes[0];
+
+        if(routeLine){
+            map.removeLayer(routeLine);
+        }
+
+        const coordinates =
+            route.geometry.coordinates.map(function(point){
+                return [point[1],point[0]];
+            });
+
+        routeLine = L.polyline(coordinates,{
+            color:"#278bd0",
+            weight:5,
+            opacity:.9
+        }).addTo(map);
+
+        const roadDistance =
+            (route.distance/1000).toFixed(2);
+
+        const minutes =
+            Math.ceil(route.duration/60);
+
+        map.fitBounds(routeLine.getBounds(),{
+            padding:[60,60]
+        });
+
+        mapStatus.innerText =
+            "Road distance: "+roadDistance+
+            " km | Estimated time: "+minutes+" minutes";
+
+        selectedDistance.textContent =
+            "Road distance: "+roadDistance+
+            " km | Estimated time: "+minutes+" minutes";
+
+    }catch(error){
+
+        console.error("Navigation error:",error);
+
+        mapStatus.innerText =
+            "Driving route unavailable. Please try again.";
+
+    }finally{
+
+        navigationButton.disabled = false;
+        navigationButton.textContent = "Start Navigation";
+    }
+}
+
+
+// Initial map status
+
+mapStatus.innerText =
+    "Map ready. Click Use My Location.";
+
+</script>
+
+</body>
+</html>

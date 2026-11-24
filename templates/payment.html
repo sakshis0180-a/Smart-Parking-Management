@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Payment | Smart Parking</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #eaf6ff, #ffffff, #d9efff);
+            color: #243b53;
+            min-height: 100vh;
+        }
+
+        nav {
+            height: 70px;
+            background: linear-gradient(135deg, #ffffff, #e5f3ff);
+            border-bottom: 1px solid #b9dced;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 5%;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: #243b53;
+        }
+
+        .logo span {
+            color: #278bd0;
+        }
+
+        .page {
+            width: 90%;
+            max-width: 1150px;
+            margin: 45px auto;
+        }
+
+        .tag {
+            color: #278bd0;
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            font-size: 36px;
+            margin-bottom: 8px;
+            color: #243b53;
+        }
+
+        .subtitle {
+            color: #71869b;
+            font-size: 15px;
+            margin-bottom: 30px;
+        }
+
+        .payment-panel {
+            background: white;
+            color: #243b53;
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid #d5e7f4;
+            box-shadow: 0 15px 40px rgba(55, 120, 160, 0.12);
+        }
+
+        .panel-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #243b53;
+        }
+
+        .panel-subtitle {
+            color: #71869b;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .detail-box {
+            border: 1px solid #d5e7f4;
+            border-radius: 12px;
+            padding: 18px;
+            background: #f2f8ff;
+        }
+
+        .detail-label {
+            display: block;
+            color: #71869b;
+            font-size: 13px;
+            margin-bottom: 7px;
+        }
+
+        .detail-value {
+            color: #243b53;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .amount-box {
+            margin-top: 22px;
+            padding: 20px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #e5f3ff, #d9efff);
+            border: 1px solid #b9dced;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .amount-label {
+            color: #278bd0;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        .amount {
+            color: #278bd0;
+            font-size: 25px;
+            font-weight: 700;
+        }
+
+        .method-title {
+            margin-top: 25px;
+            margin-bottom: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #243b53;
+        }
+
+        .method-box {
+            border: 1px solid #d5e7f4;
+            border-radius: 12px;
+            padding: 16px;
+            background: #ffffff;
+        }
+
+        .method-box label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #435d76;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .method-box input {
+            accent-color: #278bd0;
+        }
+
+        .action-area {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+
+        .pay-btn {
+            border: none;
+            background: linear-gradient(135deg, #55b5ed, #278bd0);
+            color: white;
+            padding: 13px 27px;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .pay-btn:hover {
+            background: #278bd0;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(85, 181, 237, 0.3);
+        }
+
+        .back-area {
+            margin-top: 18px;
+        }
+
+        .back-link {
+            color: #278bd0;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            nav {
+                padding: 0 20px;
+            }
+
+            .page {
+                width: 92%;
+                margin: 30px auto;
+            }
+
+            h1 {
+                font-size: 29px;
+            }
+
+            .payment-panel {
+                padding: 20px;
+            }
+
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .amount-box {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+
+            .action-area {
+                justify-content: stretch;
+            }
+
+            .pay-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav>
+        <div class="logo">
+            Smart<span>Parking</span>
+        </div>
+    </nav>
+
+    <!-- PAGE -->
+    <main class="page">
+
+        <div class="tag">
+            SMART PARKING MANAGEMENT & VEHICLE TRACKING
+        </div>
+
+        <h1>Payment</h1>
+
+        <p class="subtitle">
+            Review your booking amount and complete your parking payment.
+        </p>
+
+        <!-- PAYMENT PANEL -->
+        <div class="payment-panel">
+
+            <div class="panel-title">
+                Payment Details
+            </div>
+
+            <div class="panel-subtitle">
+                Confirm your booking information before making the payment.
+            </div>
+
+            <!-- BOOKING DETAILS -->
+            <div class="details-grid">
+
+                <div class="detail-box">
+                    <span class="detail-label">Vehicle Number</span>
+                    <span class="detail-value">
+                        {{ vehicle[1] }}
+                    </span>
+                </div>
+
+                <div class="detail-box">
+                    <span class="detail-label">Vehicle Type</span>
+                    <span class="detail-value">
+                        {{ vehicle[2] }}
+                    </span>
+                </div>
+
+                <div class="detail-box">
+                    <span class="detail-label">Parking Slot</span>
+                    <span class="detail-value">
+                        {{ slot[1] }}
+                    </span>
+                </div>
+
+                <div class="detail-box">
+                    <span class="detail-label">Slot Status</span>
+                    <span class="detail-value">
+                        {{ slot[2] }}
+                    </span>
+                </div>
+
+            </div>
+
+            <!-- AMOUNT -->
+            <div class="amount-box">
+
+                <span class="amount-label">
+                    Parking Fee
+                </span>
+
+                <span class="amount">
+                    ₹{{ "%.2f"|format(fee or 0) }}
+                </span>
+
+            </div>
+
+            <!-- PAYMENT FORM -->
+            <form action="{{ url_for('payment_success') }}" method="POST">
+
+                <div class="method-title">
+                    Select Payment Method
+                </div>
+
+                <div class="method-box">
+
+                    <label>
+                        <input
+                            type="radio"
+                            name="payment_method"
+                            value="UPI"
+                            checked
+                            required
+                        >
+
+                        UPI / Online Payment
+                    </label>
+
+                </div>
+
+                <input
+                    type="hidden"
+                    name="booking_id"
+                    value="{{ booking_id }}"
+                >
+
+                <!-- PAY NOW -->
+                <div class="action-area">
+
+                    <button type="submit" class="pay-btn">
+                        Pay Now →
+                    </button>
+
+                </div>
+
+            </form>
+
+            <!-- BACK -->
+            <div class="back-area">
+
+                <a
+                    href="{{ url_for('booking_details') }}"
+                    class="back-link"
+                >
+                    ← Back to Booking Details
+                </a>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

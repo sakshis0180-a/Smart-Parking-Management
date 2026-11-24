@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Booking Details | Smart Parking</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #eaf6ff, #ffffff, #d9efff);
+            color: #243b53;
+            min-height: 100vh;
+        }
+
+        nav {
+            min-height: 70px;
+            background: #ffffff;
+            border-bottom: 1px solid #b9dced;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 5%;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: #243b53;
+        }
+
+        .logo span {
+            color: #278bd0;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #435d76;
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #278bd0;
+        }
+
+        .page {
+            width: 90%;
+            max-width: 1150px;
+            margin: 45px auto;
+        }
+
+        .tag {
+            color: #278bd0;
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            font-size: 36px;
+            margin-bottom: 8px;
+            color: #243b53;
+        }
+
+        .subtitle {
+            color: #71869b;
+            font-size: 15px;
+            margin-bottom: 30px;
+        }
+
+        .booking-panel {
+            background: white;
+            color: #243b53;
+            border: 1px solid #d5e7f4;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(65, 130, 170, 0.12);
+            transition: 0.3s;
+        }
+
+        .booking-panel:hover {
+            box-shadow: 0 18px 45px rgba(85, 181, 237, 0.18);
+        }
+
+        .panel-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #243b53;
+        }
+
+        .panel-subtitle {
+            color: #71869b;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .detail-card {
+            border: 1px solid #cfe3f1;
+            border-radius: 14px;
+            padding: 22px;
+            background: #f7fbff;
+            transition: 0.3s;
+        }
+
+        .detail-card:hover {
+            box-shadow: 0 0 18px rgba(85, 181, 237, 0.18);
+        }
+
+        .detail-card h3 {
+            color: #278bd0;
+            font-size: 15px;
+            margin-bottom: 15px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 11px 0;
+            border-bottom: 1px solid #e1edf5;
+            gap: 20px;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .label {
+            color: #71869b;
+            font-size: 14px;
+        }
+
+        .value {
+            color: #243b53;
+            font-size: 14px;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .status-available {
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .status-occupied {
+            background: #fee2e2;
+            color: #b91c1c;
+        }
+
+        .payment-info {
+            margin-top: 25px;
+            padding: 18px;
+            border-radius: 12px;
+            background: #f0f8ff;
+            border: 1px solid #cfe3f1;
+        }
+
+        .payment-info h3 {
+            color: #278bd0;
+            font-size: 15px;
+            margin-bottom: 8px;
+        }
+
+        .payment-info p {
+            color: #71869b;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        .fee {
+            margin-top: 12px;
+            font-size: 20px;
+            font-weight: 700;
+            color: #278bd0;
+        }
+
+        .action-area {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+
+        .next-btn {
+            display: inline-block;
+            border: none;
+            background: linear-gradient(135deg, #55b5ed, #278bd0);
+            color: white;
+            padding: 13px 25px;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+            text-decoration: none;
+        }
+
+        .next-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(85, 181, 237, 0.3);
+        }
+
+        .bottom-navigation {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 22px;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #278bd0;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 10px 15px;
+            border: 1px solid #b9dced;
+            border-radius: 8px;
+            background: #ffffff;
+            transition: 0.3s;
+        }
+
+        .back-link:hover {
+            box-shadow: 0 0 15px rgba(85, 181, 237, 0.3);
+        }
+
+        @media (max-width: 768px) {
+
+            nav {
+                padding: 12px 20px;
+                flex-direction: column;
+            }
+
+            .nav-links {
+                justify-content: center;
+                gap: 15px;
+            }
+
+            .page {
+                width: 92%;
+                margin: 30px auto;
+            }
+
+            h1 {
+                font-size: 29px;
+            }
+
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .booking-panel {
+                padding: 20px;
+            }
+
+            .action-area {
+                justify-content: stretch;
+            }
+
+            .next-btn {
+                width: 100%;
+                text-align: center;
+            }
+
+            .bottom-navigation {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .back-link {
+                text-align: center;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <nav>
+
+        <div class="logo">
+            Smart<span>Parking</span>
+        </div>
+
+        <div class="nav-links">
+
+            <a href="{{ url_for('vehicles') }}">Vehicles</a>
+
+            <a href="{{ url_for('location') }}">GPS</a>
+
+            <a href="{{ url_for('my_bookings') }}">My Bookings</a>
+
+        </div>
+
+    </nav>
+
+    <main class="page">
+
+        <div class="tag">
+            SMART PARKING MANAGEMENT & VEHICLE TRACKING
+        </div>
+
+        <h1>Booking Details</h1>
+
+        <p class="subtitle">
+            Check your selected vehicle and parking slot details before continuing.
+        </p>
+
+        <div class="booking-panel">
+
+            <div class="panel-title">
+                Confirm Your Selection
+            </div>
+
+            <div class="panel-subtitle">
+                Your selected vehicle and parking slot are shown below.
+            </div>
+
+            <div class="details-grid">
+
+                <div class="detail-card">
+
+                    <h3>🚗 Vehicle Details</h3>
+
+                    <div class="detail-row">
+                        <span class="label">Vehicle Number</span>
+                        <span class="value">{{ vehicle[1] }}</span>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="label">Vehicle Type</span>
+                        <span class="value">{{ vehicle[2] }}</span>
+                    </div>
+
+                </div>
+
+                <div class="detail-card">
+
+                    <h3>🅿️ Parking Details</h3>
+
+                    <div class="detail-row">
+                        <span class="label">Booking ID</span>
+                        <span class="value">#{{ booking[0] }}</span>
+                    </div>
+
+                    <div class="detail-row">
+                        <span class="label">Parking Slot</span>
+                        <span class="value">{{ slot[1] }}</span>
+                    </div>
+
+                    <div class="detail-row">
+
+                        <span class="label">Slot Status</span>
+
+                        <span class="value">
+
+                            {% if slot[2] == 'Available' %}
+
+                                <span class="status status-available">
+                                    Available
+                                </span>
+
+                            {% else %}
+
+                                <span class="status status-occupied">
+                                    Occupied
+                                </span>
+
+                            {% endif %}
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="payment-info">
+
+                <h3>Payment Information</h3>
+
+                <p>
+                    Please verify your vehicle and parking slot details.
+                    Continue to the payment page to review your parking fee.
+                </p>
+
+                <div class="fee">
+                    Parking Fee: ₹{{ "%.2f"|format(fee or 0) }}
+                </div>
+
+            </div>
+
+            <div class="action-area">
+
+                <a href="{{ url_for('payment') }}" class="next-btn">
+                    Next → Payment
+                </a>
+
+            </div>
+
+            <div class="bottom-navigation">
+
+                <a href="{{ url_for('parking_slots') }}" class="back-link">
+                    ← Back to Parking Slots
+                </a>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</body>
+
+</html>

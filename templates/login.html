@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login | Smart Parking</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #eaf6ff, #ffffff, #d9efff);
+            color: #243b53;
+            padding: 20px;
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 420px;
+            background: rgba(255, 255, 255, 0.97);
+            border: 1px solid #b9ddf5;
+            border-radius: 20px;
+            padding: 38px 32px;
+            box-shadow: 0 20px 60px rgba(64, 137, 184, 0.16);
+            text-align: center;
+        }
+
+        .logo {
+            width: 65px;
+            height: 65px;
+            margin: 0 auto 18px;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #55b5ed, #278bd0);
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            box-shadow: 0 0 25px rgba(39, 139, 208, 0.25);
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            color: #243b53;
+        }
+
+        .subtitle {
+            color: #71869b;
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+
+        .form-group {
+            text-align: left;
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #344b63;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px 14px;
+            border-radius: 10px;
+            border: 1px solid #c6ddeb;
+            background: #f7fbff;
+            color: #243b53;
+            outline: none;
+            font-size: 14px;
+        }
+
+        input:focus {
+            border-color: #55aee5;
+            box-shadow: 0 0 12px rgba(39, 139, 208, 0.18);
+        }
+
+        input::placeholder {
+            color: #91a5b8;
+        }
+
+        .forgot-password {
+            display: block;
+            text-align: right;
+            margin-top: -8px;
+            margin-bottom: 8px;
+            color: #278bd0;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .forgot-password:hover {
+            color: #176fae;
+            text-shadow: 0 0 10px rgba(39, 139, 208, 0.15);
+        }
+
+        .login-btn {
+            width: 100%;
+            border: none;
+            border-radius: 10px;
+            padding: 14px;
+            margin-top: 8px;
+            background: linear-gradient(135deg, #55b5ed, #278bd0);
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .login-btn:hover {
+            box-shadow: 0 0 22px rgba(39, 139, 208, 0.30);
+        }
+
+        .register-text {
+            margin-top: 22px;
+            color: #71869b;
+            font-size: 14px;
+        }
+
+        .register-text a {
+            color: #278bd0;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .home-link {
+            display: inline-block;
+            margin-top: 20px;
+            color: #71869b;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        .home-link:hover {
+            color: #278bd0;
+            text-shadow: 0 0 10px rgba(39, 139, 208, 0.15);
+        }
+
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 32px 22px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-card">
+
+        <div class="logo">P</div>
+
+        <h1>Welcome Back</h1>
+
+        <p class="subtitle">
+            Login to your Smart Parking account
+        </p>
+
+        <form method="POST" action="/login">
+
+            <div class="form-group">
+                <label for="username">Username</label>
+
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    placeholder="Enter your username"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Enter your password"
+                    required
+                >
+            </div>
+
+            <a href="/forgot-password" class="forgot-password">
+                Forgot Password?
+            </a>
+
+            <button type="submit" class="login-btn">
+                Login
+            </button>
+
+        </form>
+
+        <p class="register-text">
+            Don't have an account?
+            <a href="/register">Register</a>
+        </p>
+
+        <a href="/" class="home-link">
+            ← Back to Home
+        </a>
+
+    </div>
+
+</body>
+</html>

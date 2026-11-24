@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Registration Successful | Smart Parking</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            min-height: 100vh;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            padding: 20px;
+
+            color: #243b53;
+
+            background:
+                radial-gradient(
+                    circle at 50% 35%,
+                    rgba(85, 181, 237, 0.25),
+                    transparent 42%
+                ),
+                linear-gradient(
+                    135deg,
+                    #eaf6ff,
+                    #ffffff,
+                    #d9efff
+                );
+        }
+
+        .success-card {
+            width: 430px;
+            max-width: 100%;
+
+            text-align: center;
+
+            padding: 42px 32px;
+
+            border-radius: 15px;
+
+            background: rgba(255, 255, 255, 0.97);
+
+            border: 1px solid #b9dced;
+
+            box-shadow:
+                0 20px 60px rgba(55, 120, 160, 0.15),
+                0 0 30px rgba(85, 181, 237, 0.12);
+        }
+
+        .success-icon {
+            width: 70px;
+            height: 70px;
+
+            margin: 0 auto 20px;
+
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background: #e5f3ff;
+
+            border: 2px solid #55b5ed;
+
+            color: #278bd0;
+
+            font-size: 34px;
+
+            box-shadow:
+                0 0 25px rgba(85, 181, 237, 0.25);
+        }
+
+        h1 {
+            font-size: 26px;
+            margin-bottom: 12px;
+            color: #243b53;
+        }
+
+        .message {
+            color: #435d76;
+
+            font-size: 14px;
+
+            line-height: 1.6;
+
+            margin-bottom: 8px;
+        }
+
+        .sub-message {
+            color: #71869b;
+
+            font-size: 12px;
+
+            margin-bottom: 28px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            text-decoration: none;
+
+            padding: 11px 22px;
+
+            border-radius: 7px;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            transition: 0.25s;
+        }
+
+        .login-btn {
+            color: white;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #55b5ed,
+                    #278bd0
+                );
+
+            border: 1px solid #55b5ed;
+        }
+
+        .home-btn {
+            color: #278bd0;
+
+            background: #f2f8ff;
+
+            border: 1px solid #b9dced;
+        }
+
+        .btn:hover {
+            box-shadow:
+                0 0 20px rgba(85, 181, 237, 0.4);
+        }
+
+        @media (max-width: 500px) {
+
+            .success-card {
+                padding: 35px 22px;
+            }
+
+            h1 {
+                font-size: 23px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="success-card">
+
+        <div class="success-icon">
+            ✓
+        </div>
+
+        <h1>
+            Registration Successful!
+        </h1>
+
+        <p class="message">
+            Your Smart Parking account has been created successfully.
+        </p>
+
+        <p class="sub-message">
+            You can now login to your account.
+        </p>
+
+        <div class="buttons">
+
+            <a href="/login" class="btn login-btn">
+                Go to Login
+            </a>
+
+            <a href="/" class="btn home-btn">
+                Back to Home
+            </a>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,1574 @@
+/* =========================================================
+   SMART PARKING MANAGEMENT & VEHICLE TRACKING
+   ========================================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: #06112b;
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   NAVBAR
+   ========================================================= */
+
+.navbar {
+    height: 78px;
+    width: 100%;
+    padding: 0 55px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    background: rgba(4, 12, 34, 0.96);
+    border-bottom: 1px solid rgba(120, 150, 230, 0.08);
+
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.logo-icon {
+    width: 34px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 9px;
+
+    background: linear-gradient(
+        135deg,
+        #8d4cff,
+        #4f7cff
+    );
+
+    color: white;
+    font-size: 19px;
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 34px;
+}
+
+.nav-links a {
+    color: #d9e2f7;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+
+    transition: 0.25s ease;
+}
+
+.nav-links a:hover {
+    color: #a86cff;
+    text-shadow: 0 0 12px rgba(150, 100, 255, 0.55);
+}
+
+.nav-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.nav-buttons button {
+    border: 0;
+    padding: 10px 18px;
+    border-radius: 8px;
+
+    color: white;
+    background: rgba(110, 71, 225, 0.22);
+
+    cursor: pointer;
+    font-weight: 600;
+
+    transition: 0.25s ease;
+}
+
+.nav-buttons button:hover {
+    background: rgba(135, 91, 255, 0.38);
+    box-shadow: 0 0 16px rgba(130, 85, 255, 0.3);
+}
+
+
+/* =========================================================
+   HOME
+   ========================================================= */
+
+.home-section {
+    min-height: calc(100vh - 78px);
+    padding: 65px 65px 38px;
+
+    background:
+        radial-gradient(
+            circle at 70% 45%,
+            rgba(35, 94, 190, 0.32),
+            transparent 32%
+        ),
+        linear-gradient(
+            180deg,
+            #07142f 0%,
+            #0a2450 58%,
+            #071a3b 100%
+        );
+}
+
+.home-content {
+    max-width: 1250px;
+    margin: auto;
+
+    display: grid;
+    grid-template-columns: 48% 52%;
+    align-items: center;
+    gap: 20px;
+}
+
+
+/* =========================================================
+   HOME TEXT
+   ========================================================= */
+
+.home-text {
+    padding-left: 15px;
+    z-index: 5;
+}
+
+.small-title {
+    color: #b18aff;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    margin-bottom: 18px;
+}
+
+.home-text h1 {
+    max-width: 570px;
+
+    font-size: clamp(42px, 5vw, 67px);
+    line-height: 1.05;
+
+    font-weight: 800;
+
+    color: #ffffff;
+
+    text-shadow: 0 4px 18px rgba(0, 0, 0, 0.2);
+}
+
+.home-text h1 span {
+    display: block;
+    color: #a05cff;
+}
+
+.home-text p {
+    max-width: 540px;
+
+    margin-top: 25px;
+
+    color: #c7d4ea;
+
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 14px;
+    margin-top: 30px;
+}
+
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.primary-btn,
+.secondary-btn {
+    padding: 13px 24px;
+
+    border-radius: 9px;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: 0.25s ease;
+}
+
+.primary-btn {
+    border: 1px solid #9d5cff;
+
+    color: white;
+
+    background: linear-gradient(
+        135deg,
+        #974eff,
+        #6f43df
+    );
+}
+
+.primary-btn:hover {
+    box-shadow:
+        0 0 20px rgba(151, 78, 255, 0.48);
+}
+
+.secondary-btn {
+    border: 1px solid rgba(170, 190, 230, 0.35);
+
+    color: #e6edf9;
+
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.secondary-btn:hover {
+    background: rgba(145, 111, 255, 0.16);
+    box-shadow: 0 0 18px rgba(130, 100, 255, 0.2);
+}
+
+
+/* =========================================================
+   PARKING VISUAL
+   ========================================================= */
+
+.parking-visual {
+    position: relative;
+
+    width: 100%;
+    max-width: 610px;
+    height: 450px;
+
+    margin-left: auto;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at 52% 54%,
+            rgba(35, 99, 220, 0.38),
+            transparent 38%
+        ),
+        linear-gradient(
+            180deg,
+            #071735 0%,
+            #0b2856 65%,
+            #071a39 100%
+        );
+
+    border-radius: 20px;
+}
+
+
+/* =========================================================
+   CITY BUILDINGS
+   ========================================================= */
+
+.city {
+    position: absolute;
+
+    left: 45px;
+    right: 45px;
+    bottom: 145px;
+
+    height: 150px;
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+
+    gap: 13px;
+
+    opacity: 0.62;
+}
+
+.building {
+    position: relative;
+
+    width: 45px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #183665,
+            #0a1c3b
+        );
+
+    border: 1px solid rgba(102, 148, 225, 0.12);
+
+    box-shadow:
+        inset 0 0 20px rgba(50, 110, 210, 0.12);
+}
+
+.building-1 {
+    height: 82px;
+}
+
+.building-2 {
+    height: 115px;
+    width: 50px;
+}
+
+.building-3 {
+    height: 70px;
+}
+
+.building-4 {
+    height: 138px;
+    width: 55px;
+}
+
+.building-5 {
+    height: 92px;
+}
+
+.building-6 {
+    height: 110px;
+    width: 48px;
+}
+
+.building span {
+    display: block;
+
+    width: 5px;
+    height: 7px;
+
+    margin: 10px 0 0 9px;
+
+    background: rgba(86, 146, 231, 0.45);
+
+    box-shadow:
+        15px 0 rgba(86, 146, 231, 0.32),
+        0 15px rgba(86, 146, 231, 0.27),
+        15px 15px rgba(86, 146, 231, 0.28);
+}
+
+
+/* =========================================================
+   GPS PIN
+   ========================================================= */
+
+.gps-pin {
+    position: absolute;
+
+    top: 45px;
+    left: 46%;
+
+    width: 74px;
+    height: 94px;
+
+    z-index: 8;
+
+    transform: translateX(-50%);
+}
+
+.gps-circle {
+    position: relative;
+
+    width: 74px;
+    height: 74px;
+
+    background: linear-gradient(
+        145deg,
+        #4c83ff,
+        #1654dc
+    );
+
+    border-radius: 52% 52% 52% 0;
+
+    transform: rotate(-45deg);
+
+    box-shadow:
+        0 12px 30px rgba(28, 88, 255, 0.48);
+}
+
+.gps-dot {
+    position: absolute;
+
+    width: 28px;
+    height: 28px;
+
+    left: 23px;
+    top: 23px;
+
+    background: white;
+
+    border-radius: 50%;
+}
+
+
+/* =========================================================
+   PARKING GROUND
+   ========================================================= */
+
+.parking-ground {
+    position: absolute;
+
+    left: 115px;
+    right: 105px;
+    bottom: 30px;
+
+    height: 185px;
+}
+
+
+/* =========================================================
+   PARKING LINES
+   ========================================================= */
+
+.parking-line {
+    position: absolute;
+
+    background: rgba(200, 222, 255, 0.72);
+
+    box-shadow:
+        0 0 7px rgba(160, 200, 255, 0.18);
+}
+
+.left-line {
+    left: 0;
+    bottom: 0;
+
+    width: 3px;
+    height: 145px;
+
+    transform: rotate(19deg);
+    transform-origin: bottom;
+}
+
+.right-line {
+    right: 0;
+    bottom: 0;
+
+    width: 3px;
+    height: 145px;
+
+    transform: rotate(-19deg);
+    transform-origin: bottom;
+}
+
+.bottom-line {
+    left: 13px;
+    right: 13px;
+    bottom: 0;
+
+    height: 3px;
+}
+
+
+/* =========================================================
+   CAR
+   ========================================================= */
+
+.car {
+    position: absolute;
+
+    left: 50%;
+    bottom: 30px;
+
+    width: 275px;
+    height: 165px;
+
+    transform: translateX(-50%);
+
+    z-index: 7;
+}
+
+
+/* shadow */
+
+.car-shadow {
+    position: absolute;
+
+    left: 15px;
+    bottom: 3px;
+
+    width: 245px;
+    height: 30px;
+
+    border-radius: 50%;
+
+    background: rgba(0, 0, 0, 0.48);
+
+    filter: blur(9px);
+}
+
+
+/* body */
+
+.car-body {
+    position: absolute;
+
+    left: 10px;
+    bottom: 24px;
+
+    width: 255px;
+    height: 94px;
+
+    border-radius:
+        38px
+        38px
+        22px
+        22px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #ffffff 0%,
+            #e4ebf4 48%,
+            #aab8ca 100%
+        );
+
+    box-shadow:
+        inset 0 5px 12px rgba(255,255,255,0.9),
+        inset 0 -8px 15px rgba(50,65,88,0.28),
+        0 9px 20px rgba(0,0,0,0.3);
+}
+
+
+/* roof */
+
+.car-roof {
+    position: absolute;
+
+    left: 55px;
+    top: -43px;
+
+    width: 150px;
+    height: 69px;
+
+    border-radius:
+        75px
+        75px
+        12px
+        12px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #ffffff,
+            #cbd7e6
+        );
+}
+
+
+/* windows */
+
+.car-window {
+    position: absolute;
+
+    top: -34px;
+
+    height: 52px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #223b5b,
+            #071321
+        );
+
+    border: 3px solid #d9e4f1;
+}
+
+.window-left {
+    left: 69px;
+
+    width: 60px;
+
+    border-radius:
+        43px
+        5px
+        5px
+        8px;
+}
+
+.window-right {
+    left: 130px;
+
+    width: 57px;
+
+    border-radius:
+        5px
+        43px
+        8px
+        5px;
+}
+
+
+/* window divider */
+
+.window-divider {
+    position: absolute;
+
+    left: 127px;
+    top: -31px;
+
+    width: 3px;
+    height: 45px;
+
+    background: #d7e1ec;
+
+    transform: rotate(3deg);
+}
+
+
+/* windshield shine */
+
+.front-windshield {
+    position: absolute;
+
+    left: 78px;
+    top: -27px;
+
+    width: 45px;
+    height: 6px;
+
+    background: rgba(255,255,255,0.22);
+
+    border-radius: 50%;
+}
+
+
+/* hood */
+
+.car-hood {
+    position: absolute;
+
+    left: 10px;
+    bottom: 32px;
+
+    width: 235px;
+    height: 39px;
+
+    border-radius:
+        35px
+        35px
+        12px
+        12px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #f9fbff,
+            #c8d5e4
+        );
+}
+
+
+/* headlights */
+
+.headlight {
+    position: absolute;
+
+    bottom: 38px;
+
+    width: 40px;
+    height: 17px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #ffffff,
+            #cceaff
+        );
+
+    box-shadow:
+        0 0 14px rgba(196, 231, 255, 0.9);
+
+    border-radius: 50%;
+}
+
+.headlight-left {
+    left: 17px;
+    transform: rotate(-8deg);
+}
+
+.headlight-right {
+    right: 17px;
+    transform: rotate(8deg);
+}
+
+
+/* grille */
+
+.car-grille {
+    position: absolute;
+
+    left: 91px;
+    bottom: 17px;
+
+    width: 73px;
+    height: 15px;
+
+    border-radius: 50%;
+
+    background: #566477;
+
+    box-shadow:
+        inset 0 2px 3px rgba(255,255,255,0.15);
+}
+
+
+/* bumper */
+
+.front-bumper {
+    position: absolute;
+
+    left: 36px;
+    right: 36px;
+    bottom: 8px;
+
+    height: 13px;
+
+    border-radius: 50%;
+
+    background: #8797aa;
+}
+
+
+/* mirrors */
+
+.side-mirror {
+    position: absolute;
+
+    top: 4px;
+
+    width: 23px;
+    height: 13px;
+
+    border-radius: 50%;
+
+    background: #b9c9da;
+
+    box-shadow:
+        inset 0 -3px 4px rgba(0,0,0,0.2);
+}
+
+.mirror-left {
+    left: 43px;
+}
+
+.mirror-right {
+    right: 39px;
+}
+
+
+/* =========================================================
+   WHEELS
+   ========================================================= */
+
+.wheel {
+    position: absolute;
+
+    bottom: -14px;
+
+    width: 49px;
+    height: 49px;
+
+    border-radius: 50%;
+
+    background: #101722;
+
+    border: 5px solid #2b3849;
+
+    box-shadow:
+        inset 0 0 0 6px #111923,
+        0 4px 9px rgba(0,0,0,0.38);
+}
+
+.wheel-left {
+    left: 40px;
+}
+
+.wheel-right {
+    right: 40px;
+}
+
+.wheel-inner {
+    position: absolute;
+
+    width: 21px;
+    height: 21px;
+
+    left: 9px;
+    top: 9px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            #b7c5d5 0 25%,
+            #667589 27% 50%,
+            #1b2635 52%
+        );
+}
+
+
+/* =========================================================
+   PARKING SIGN
+   ========================================================= */
+
+.parking-sign {
+    position: absolute;
+
+    right: 45px;
+    bottom: 102px;
+
+    width: 75px;
+    height: 210px;
+
+    z-index: 10;
+}
+
+.parking-board {
+    width: 70px;
+    height: 70px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 4px solid rgba(225, 239, 255, 0.75);
+
+    border-radius: 6px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #2b70d0,
+            #16468e
+        );
+
+    box-shadow:
+        0 7px 20px rgba(0,0,0,0.25);
+}
+
+.parking-board span {
+    color: white;
+
+    font-size: 49px;
+    font-weight: 700;
+
+    line-height: 1;
+}
+
+.parking-pole {
+    width: 7px;
+    height: 120px;
+
+    margin: auto;
+
+    background:
+        linear-gradient(
+            90deg,
+            #9eb5d1,
+            #edf5ff,
+            #8ca5c0
+        );
+
+    border-radius: 4px;
+}
+
+.parking-base {
+    position: absolute;
+
+    bottom: 0;
+    left: 5px;
+
+    width: 64px;
+    height: 9px;
+
+    border-radius: 50%;
+
+    background: #c7d5e7;
+}
+
+
+/* =========================================================
+   STATISTICS
+   ========================================================= */
+
+.stats-container {
+    max-width: 1250px;
+
+    margin: 42px auto 0;
+
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 18px;
+}
+
+.stat-card {
+    min-height: 78px;
+
+    padding: 15px 18px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 14px;
+
+    border-radius: 13px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(72, 113, 182, 0.28),
+            rgba(47, 82, 145, 0.17)
+        );
+
+    border: 1px solid rgba(140, 174, 230, 0.12);
+
+    box-shadow:
+        0 8px 22px rgba(0,0,0,0.12);
+
+    transition: 0.25s ease;
+}
+
+.stat-card:hover {
+    box-shadow:
+        0 0 18px rgba(100, 135, 255, 0.18);
+}
+
+.stat-icon {
+    width: 39px;
+    height: 39px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 10px;
+
+    background: rgba(112, 85, 225, 0.18);
+
+    font-size: 18px;
+}
+
+.occupied-icon {
+    color: #b883ff;
+}
+
+.vehicle-icon {
+    color: #42baff;
+}
+
+.available-icon {
+    color: #e7ef74;
+}
+
+.area-icon {
+    color: #ff8585;
+}
+
+.stat-info {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.stat-info span {
+    color: #b9c9e2;
+    font-size: 11px;
+}
+
+.stat-info strong {
+    color: white;
+    font-size: 20px;
+}
+
+
+/* =========================================================
+   OTHER SCREENS
+   ========================================================= */
+
+.simple-screen {
+    min-height: 100vh;
+
+    padding: 90px 60px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #07142f,
+            #091f44
+        );
+}
+
+.screen-content {
+    max-width: 1100px;
+    margin: auto;
+}
+
+.section-label {
+    color: #a66cff;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    letter-spacing: 2px;
+}
+
+.screen-content h2 {
+    margin-top: 10px;
+
+    font-size: 42px;
+}
+
+.screen-content > p {
+    max-width: 700px;
+
+    margin-top: 15px;
+
+    color: #b9c8df;
+
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   HOME BUTTON
+   ========================================================= */
+
+.back-home {
+    position: absolute;
+
+    top: 100px;
+    left: 55px;
+
+    padding: 10px 18px;
+
+    border: 1px solid rgba(150,170,220,0.25);
+
+    border-radius: 8px;
+
+    background: rgba(90,70,180,0.18);
+
+    color: white;
+
+    cursor: pointer;
+
+    transition: 0.25s ease;
+}
+
+.back-home:hover {
+    box-shadow: 0 0 15px rgba(130,90,255,0.25);
+}
+
+
+/* =========================================================
+   FEATURE CARDS
+   ========================================================= */
+
+.feature-grid {
+    margin-top: 35px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 18px;
+}
+
+.feature-card {
+    padding: 25px;
+
+    min-height: 170px;
+
+    border-radius: 15px;
+
+    background: rgba(255,255,255,0.05);
+
+    border: 1px solid rgba(130,160,220,0.13);
+
+    transition: 0.25s ease;
+}
+
+.feature-card:hover {
+    box-shadow:
+        0 0 20px rgba(105,80,255,0.18);
+}
+
+.feature-card h3 {
+    margin-bottom: 12px;
+
+    color: white;
+}
+
+.feature-card p {
+    color: #afc0da;
+
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   MAP
+   ========================================================= */
+
+.map-panel {
+    margin-top: 30px;
+
+    padding: 20px;
+
+    border-radius: 18px;
+
+    background: white;
+
+    color: #17213b;
+}
+
+.map-toolbar {
+    display: flex;
+
+    gap: 12px;
+
+    margin-bottom: 15px;
+}
+
+.map-toolbar input {
+    flex: 1;
+
+    padding: 13px;
+
+    border: 1px solid #d9dfeb;
+
+    border-radius: 8px;
+
+    outline: none;
+}
+
+.map-toolbar button {
+    padding: 12px 18px;
+
+    border: 0;
+
+    border-radius: 8px;
+
+    background: #6544e8;
+
+    color: white;
+
+    cursor: pointer;
+}
+
+.map-area {
+    position: relative;
+
+    height: 390px;
+
+    overflow: hidden;
+
+    border-radius: 12px;
+
+    background:
+        linear-gradient(
+            25deg,
+            transparent 47%,
+            #dce7dc 48%,
+            #dce7dc 51%,
+            transparent 52%
+        ),
+        linear-gradient(
+            115deg,
+            transparent 46%,
+            #dce7dc 47%,
+            #dce7dc 50%,
+            transparent 51%
+        ),
+        #eef3ec;
+}
+
+.map-pin {
+    position: absolute;
+
+    width: 45px;
+    height: 45px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50% 50% 50% 0;
+
+    transform: rotate(-45deg);
+
+    background: #2468ef;
+
+    color: white;
+
+    font-weight: 700;
+
+    box-shadow: 0 5px 12px rgba(0,0,0,0.18);
+}
+
+.map-pin::first-letter {
+    transform: rotate(45deg);
+}
+
+.pin-one {
+    top: 100px;
+    left: 25%;
+}
+
+.pin-two {
+    top: 190px;
+    left: 58%;
+}
+
+.pin-three {
+    top: 80px;
+    right: 13%;
+}
+
+.user-location {
+    position: absolute;
+
+    left: 48%;
+    top: 50%;
+
+    width: 22px;
+    height: 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #ff4e55;
+
+    font-size: 28px;
+}
+
+
+/* =========================================================
+   LOGIN / REGISTER
+   ========================================================= */
+
+.auth-box {
+    width: 420px;
+    max-width: 100%;
+
+    margin: 60px auto;
+
+    padding: 38px;
+
+    border-radius: 18px;
+
+    background:
+        rgba(255,255,255,0.06);
+
+    border: 1px solid rgba(150,175,225,0.13);
+
+    box-shadow:
+        0 20px 50px rgba(0,0,0,0.2);
+}
+
+.auth-box h2 {
+    margin: 10px 0 25px;
+
+    font-size: 34px;
+}
+
+.auth-box form {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+.auth-box label {
+    margin-top: 8px;
+
+    color: #bdcbe0;
+
+    font-size: 13px;
+}
+
+.auth-box input {
+    padding: 13px 14px;
+
+    border: 1px solid rgba(160,180,220,0.2);
+
+    border-radius: 8px;
+
+    outline: none;
+
+    background: rgba(255,255,255,0.06);
+
+    color: white;
+}
+
+.auth-box input::placeholder {
+    color: #8798b5;
+}
+
+.auth-box .primary-btn {
+    margin-top: 15px;
+}
+
+.auth-box p {
+    margin-top: 20px;
+
+    color: #9eafc9;
+
+    font-size: 14px;
+}
+
+.auth-box a {
+    color: #a86cff;
+
+    text-decoration: none;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 1100px) {
+
+    .navbar {
+        padding: 0 25px;
+    }
+
+    .home-section {
+        padding-left: 30px;
+        padding-right: 30px;
+    }
+
+    .home-content {
+        grid-template-columns: 1fr;
+    }
+
+    .home-text {
+        text-align: center;
+        padding-left: 0;
+    }
+
+    .home-text h1,
+    .home-text p {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .hero-buttons {
+        justify-content: center;
+    }
+
+    .parking-visual {
+        margin: 30px auto 0;
+    }
+
+    .stats-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .feature-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+@media (max-width: 760px) {
+
+    .navbar {
+        height: auto;
+
+        padding: 15px 18px;
+
+        flex-wrap: wrap;
+
+        gap: 15px;
+    }
+
+    .nav-links {
+        order: 3;
+
+        width: 100%;
+
+        justify-content: center;
+
+        gap: 18px;
+    }
+
+    .nav-links a {
+        font-size: 12px;
+    }
+
+    .nav-buttons {
+        display: none;
+    }
+
+    .home-section {
+        padding: 45px 16px 30px;
+    }
+
+    .home-text h1 {
+        font-size: 39px;
+    }
+
+    .home-text p {
+        font-size: 14px;
+    }
+
+    .parking-visual {
+        height: 350px;
+    }
+
+    .city {
+        bottom: 115px;
+
+        transform: scale(0.82);
+
+        transform-origin: bottom center;
+    }
+
+    .gps-pin {
+        transform:
+            translateX(-50%)
+            scale(0.78);
+    }
+
+    .parking-sign {
+        right: 20px;
+        bottom: 80px;
+
+        transform: scale(0.72);
+        transform-origin: bottom;
+    }
+
+    .parking-ground {
+        left: 65px;
+        right: 70px;
+        bottom: 20px;
+
+        transform: scale(0.82);
+        transform-origin: bottom center;
+    }
+
+    .car {
+        transform:
+            translateX(-50%)
+            scale(0.82);
+        transform-origin: bottom center;
+    }
+
+    .stats-container {
+        grid-template-columns: 1fr;
+    }
+
+    .feature-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .simple-screen {
+        padding: 90px 20px 40px;
+    }
+
+    .screen-content h2 {
+        font-size: 32px;
+    }
+
+    .back-home {
+        left: 20px;
+    }
+
+    .map-toolbar {
+        flex-direction: column;
+    }
+}
+
+
+@media (max-width: 480px) {
+
+    .logo {
+        font-size: 17px;
+    }
+
+    .nav-links {
+        gap: 12px;
+    }
+
+    .nav-links a {
+        font-size: 11px;
+    }
+
+    .home-text h1 {
+        font-size: 33px;
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+    }
+
+    .primary-btn,
+    .secondary-btn {
+        width: 100%;
+    }
+
+    .parking-visual {
+        height: 300px;
+        border-radius: 15px;
+    }
+
+    .city {
+        bottom: 100px;
+        transform: scale(0.68);
+    }
+
+    .gps-pin {
+        top: 35px;
+        transform:
+            translateX(-50%)
+            scale(0.62);
+    }
+
+    .parking-sign {
+        right: 5px;
+        bottom: 62px;
+        transform: scale(0.55);
+    }
+
+    .parking-ground {
+        left: 40px;
+        right: 45px;
+        bottom: 12px;
+        transform: scale(0.65);
+    }
+
+    .stat-card {
+        min-height: 70px;
+    }
+
+    .auth-box {
+        padding: 25px 20px;
+    }
+}

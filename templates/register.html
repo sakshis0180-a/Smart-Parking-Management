@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Register | Smart Parking</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            background:
+                radial-gradient(
+                    circle at 50% 30%,
+                    rgba(85, 181, 237, 0.20),
+                    transparent 40%
+                ),
+                linear-gradient(
+                    135deg,
+                    #eaf6ff,
+                    #ffffff,
+                    #d9efff
+                );
+
+            color: #243b53;
+            padding: 25px;
+        }
+
+        /* ================= REGISTER CARD ================= */
+
+        .register-card {
+            width: 430px;
+            max-width: 100%;
+
+            background: rgba(255, 255, 255, 0.96);
+
+            border: 1px solid #b9dced;
+
+            border-radius: 14px;
+
+            padding: 35px 32px;
+
+            box-shadow:
+                0 20px 60px rgba(65, 130, 170, 0.15),
+                0 0 30px rgba(85, 181, 237, 0.10);
+        }
+
+        /* ================= LOGO ================= */
+
+        .logo {
+            width: 52px;
+            height: 52px;
+
+            margin: 0 auto 15px;
+
+            border-radius: 50%;
+
+            border: 2px solid #55b5ed;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 25px;
+            font-weight: bold;
+
+            color: #278bd0;
+
+            box-shadow:
+                0 0 18px rgba(85, 181, 237, 0.25);
+        }
+
+        /* ================= TITLE ================= */
+
+        h1 {
+            text-align: center;
+
+            font-size: 25px;
+
+            margin-bottom: 8px;
+
+            color: #243b53;
+        }
+
+        .subtitle {
+            text-align: center;
+
+            color: #71869b;
+
+            font-size: 13px;
+
+            margin-bottom: 28px;
+        }
+
+        /* ================= FORM ================= */
+
+        .form-group {
+            margin-bottom: 17px;
+        }
+
+        label {
+            display: block;
+
+            color: #435d76;
+
+            font-size: 13px;
+
+            margin-bottom: 7px;
+        }
+
+        input {
+            width: 100%;
+
+            padding: 12px 13px;
+
+            border-radius: 7px;
+
+            border: 1px solid #c5ddeb;
+
+            background: #f7fbff;
+
+            color: #243b53;
+
+            font-size: 13px;
+
+            outline: none;
+
+            transition: 0.25s;
+        }
+
+        input::placeholder {
+            color: #9aafc0;
+        }
+
+        input:focus {
+            border-color: #55b5ed;
+
+            box-shadow:
+                0 0 12px rgba(85, 181, 237, 0.25);
+        }
+
+        /* ================= REGISTER BUTTON ================= */
+
+        .register-btn {
+            width: 100%;
+
+            padding: 13px;
+
+            margin-top: 5px;
+
+            border: 1px solid #55b5ed;
+
+            border-radius: 7px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #55b5ed,
+                    #278bd0
+                );
+
+            color: white;
+
+            font-size: 14px;
+
+            font-weight: 600;
+
+            cursor: pointer;
+
+            transition: 0.25s;
+        }
+
+        .register-btn:hover {
+            box-shadow:
+                0 0 20px rgba(85, 181, 237, 0.40);
+        }
+
+        /* ================= LOGIN LINK ================= */
+
+        .login-text {
+            text-align: center;
+
+            margin-top: 20px;
+
+            color: #71869b;
+
+            font-size: 13px;
+        }
+
+        .login-text a {
+            color: #278bd0;
+
+            text-decoration: none;
+
+            font-weight: 600;
+        }
+
+        .login-text a:hover {
+            text-shadow:
+                0 0 10px rgba(85, 181, 237, 0.40);
+        }
+
+        /* ================= HOME LINK ================= */
+
+        .home-link {
+            display: block;
+
+            text-align: center;
+
+            margin-top: 18px;
+
+            color: #71869b;
+
+            text-decoration: none;
+
+            font-size: 12px;
+
+            transition: 0.25s;
+        }
+
+        .home-link:hover {
+            color: #278bd0;
+
+            text-shadow:
+                0 0 10px rgba(85, 181, 237, 0.35);
+        }
+
+        /* ================= MOBILE ================= */
+
+        @media (max-width: 500px) {
+
+            body {
+                padding: 18px;
+            }
+
+            .register-card {
+                padding: 28px 22px;
+            }
+
+            h1 {
+                font-size: 23px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================= REGISTER CARD ================= -->
+
+    <div class="register-card">
+
+        <!-- LOGO -->
+        <div class="logo">
+            P
+        </div>
+
+        <!-- TITLE -->
+        <h1>
+            Create Account
+        </h1>
+
+        <p class="subtitle">
+            Register for Smart Parking
+        </p>
+
+
+        <!-- ================= REGISTER FORM ================= -->
+
+        <form method="POST" action="/register">
+
+            <!-- FULL NAME -->
+            <div class="form-group">
+
+                <label for="fullname">
+                    Full Name
+                </label>
+
+                <input
+                    type="text"
+                    id="fullname"
+                    name="fullname"
+                    placeholder="Enter your full name"
+                    required
+                >
+
+            </div>
+
+
+            <!-- EMAIL -->
+            <div class="form-group">
+
+                <label for="email">
+                    Email Address
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="Enter your email"
+                    required
+                >
+
+            </div>
+
+
+            <!-- USERNAME -->
+            <div class="form-group">
+
+                <label for="username">
+                    Username
+                </label>
+
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    placeholder="Choose a username"
+                    required
+                >
+
+            </div>
+
+
+            <!-- PASSWORD -->
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    name="password"
+                    placeholder="Create a password"
+                    required
+                >
+
+            </div>
+
+
+            <!-- CONFIRM PASSWORD -->
+            <div class="form-group">
+
+                <label for="confirm_password">
+                    Confirm Password
+                </label>
+
+                <input
+                    type="password"
+                    id="confirm_password"
+                    name="confirm_password"
+                    placeholder="Confirm your password"
+                    required
+                >
+
+            </div>
+
+
+            <!-- REGISTER BUTTON -->
+            <button
+                type="submit"
+                class="register-btn"
+            >
+                Create Account
+            </button>
+
+        </form>
+
+
+        <!-- LOGIN -->
+        <div class="login-text">
+
+            Already have an account?
+
+            <a href="/login">
+                Login
+            </a>
+
+        </div>
+
+
+        <!-- HOME -->
+        <a href="/" class="home-link">
+            ← Back to Home
+        </a>
+
+    </div>
+
+</body>
+</html>

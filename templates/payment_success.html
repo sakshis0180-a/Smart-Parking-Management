@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SmartParking | Payment Successful</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #eaf6ff, #ffffff, #d9efff);
+            color: #243b53;
+            min-height: 100vh;
+        }
+
+        .navbar {
+            height: 70px;
+            background: linear-gradient(135deg, #ffffff, #e5f3ff);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 60px;
+            border-bottom: 1px solid #b9dced;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #243b53;
+        }
+
+        .logo span {
+            color: #278bd0;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 60px auto;
+            padding: 20px;
+        }
+
+        .success-card {
+            background: #ffffff;
+            color: #243b53;
+            border-radius: 18px;
+            padding: 45px;
+            text-align: center;
+            border: 1px solid #d5e7f4;
+            box-shadow: 0 10px 35px rgba(55, 120, 160, 0.13);
+        }
+
+        .success-icon {
+            width: 75px;
+            height: 75px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            background: #22c55e;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            font-weight: bold;
+        }
+
+        h1 {
+            color: #16a34a;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #71869b;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .details {
+            text-align: left;
+            border: 1px solid #d5e7f4;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 25px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            padding: 16px 20px;
+            border-bottom: 1px solid #dcebf5;
+            background: #f7fbff;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .label {
+            color: #71869b;
+        }
+
+        .value {
+            font-weight: 600;
+            color: #243b53;
+            text-align: right;
+        }
+
+        .status {
+            color: #16a34a;
+            font-weight: bold;
+        }
+
+        .action-area {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 35px;
+        }
+
+        .next-btn {
+            background: linear-gradient(135deg, #55b5ed, #278bd0);
+            color: white;
+            border: none;
+            padding: 14px 25px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .next-btn:hover {
+            background: #278bd0;
+            transform: translateY(-2px);
+            box-shadow: 0 0 18px rgba(85, 181, 237, 0.4);
+        }
+
+        @media (max-width: 700px) {
+
+            .navbar {
+                padding: 0 20px;
+            }
+
+            .container {
+                margin: 30px auto;
+                padding: 15px;
+            }
+
+            .success-card {
+                padding: 30px 20px;
+            }
+
+            .detail-row {
+                gap: 15px;
+            }
+
+            .action-area {
+                flex-direction: column;
+            }
+
+            .next-btn {
+                text-align: center;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+
+        <div class="logo">
+            Smart<span>Parking</span>
+        </div>
+
+    </nav>
+
+    <!-- MAIN -->
+    <div class="container">
+
+        <div class="success-card">
+
+            <div class="success-icon">
+                ✓
+            </div>
+
+            <h1>Payment Successful</h1>
+
+            <p class="subtitle">
+                Your parking booking has been successfully confirmed.
+                Thank you for using Smart Parking!
+            </p>
+
+            <!-- BOOKING DETAILS -->
+            <div class="details">
+
+                <div class="detail-row">
+                    <span class="label">Booking ID</span>
+                    <span class="value">#{{ booking_id }}</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="label">Vehicle Number</span>
+                    <span class="value">{{ vehicle[1] }}</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="label">Vehicle Type</span>
+                    <span class="value">{{ vehicle[2] }}</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="label">Parking Slot</span>
+                    <span class="value">{{ slot[1] }}</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="label">Amount</span>
+                    <span class="value">₹{{ "%.2f"|format(fee or 0) }}</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="label">Payment Method</span>
+                    <span class="value">{{ payment_method }}</span>
+                </div>
+
+                <div class="detail-row">
+                    <span class="label">Booking Status</span>
+                    <span class="status">Booked</span>
+                </div>
+
+            </div>
+
+            <!-- NEXT TO ENTRY / EXIT -->
+            <div class="action-area">
+
+                <a href="{{ url_for('entry_exit') }}" class="next-btn">
+                    Continue to Entry / Exit →
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</body>
+</html>

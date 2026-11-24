@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Nearby Parking | Smart Parking</title>
+
+    <!-- Leaflet Map -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #eaf6ff, #ffffff, #d9efff);
+            color: #243b53;
+        }
+
+        /* ================= SIDEBAR ================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 105px;
+            height: 100vh;
+            background: linear-gradient(180deg, #d9efff, #c5e5fa);
+            padding: 18px 10px;
+            z-index: 1000;
+        }
+
+        .logo {
+            color: #243b53;
+            font-size: 11px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .logo-circle {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #ffffff;
+            color: #278bd0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: auto auto 6px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .side-link {
+            display: block;
+            text-decoration: none;
+            color: #435d76;
+            font-size: 10px;
+            text-align: center;
+            padding: 11px 4px;
+            margin-bottom: 6px;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .side-link:hover {
+            background: #b9e0fa;
+            color: #278bd0;
+        }
+
+        .side-link.active {
+            background: linear-gradient(135deg, #55b5ed, #278bd0);
+            color: white;
+            box-shadow: 0 5px 14px rgba(85, 181, 237, 0.30);
+        }
+
+        .side-icon {
+            display: block;
+            font-size: 15px;
+            margin-bottom: 4px;
+        }
+
+        /* ================= MAIN ================= */
+
+        .main {
+            margin-left: 105px;
+            padding: 25px;
+        }
+
+        .page-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: #243b53;
+        }
+
+        .page-subtitle {
+            color: #71869b;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        /* ================= SEARCH ================= */
+
+        .search-box {
+            background: white;
+            border: 1px solid #d5e7f4;
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            gap: 10px;
+            margin-bottom: 18px;
+            box-shadow: 0 3px 12px rgba(65, 130, 170, 0.06);
+        }
+
+        .search-box input {
+            flex: 1;
+            border: none;
+            outline: none;
+            font-size: 12px;
+            color: #435d76;
+        }
+
+        .search-box input::placeholder {
+            color: #9aafc0;
+        }
+
+        .location-btn {
+            border: none;
+            background: linear-gradient(135deg, #55b5ed, #278bd0);
+            color: white;
+            padding: 10px 17px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .location-btn:hover {
+            box-shadow: 0 5px 16px rgba(85, 181, 237, 0.35);
+        }
+
+        /* ================= CONTENT ================= */
+
+        .parking-wrapper {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 15px;
+        }
+
+        /* ================= PARKING LIST ================= */
+
+        .parking-list {
+            background: white;
+            border: 1px solid #d5e7f4;
+            border-radius: 8px;
+            padding: 15px;
+        }
+
+        .list-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #243b53;
+        }
+
+        .parking-card {
+            border: 1px solid #d5e7f4;
+            border-radius: 7px;
+            padding: 12px;
+            margin-bottom: 10px;
+            background: #ffffff;
+            transition: 0.3s;
+        }
+
+        .parking-card:hover {
+            border-color: #55b5ed;
+            box-shadow: 0 5px 15px rgba(85, 181, 237, 0.12);
+        }
+
+        .parking-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #243b53;
+            margin-bottom: 6px;
+        }
+
+        .distance {
+            color: #278bd0;
+            font-size: 11px;
+            margin-bottom: 7px;
+        }
+
+        .available {
+            font-size: 10px;
+            color: #71869b;
+            margin-bottom: 9px;
+        }
+
+        .available span {
+            color: #22a86b;
+            font-weight: 700;
+        }
+
+        .view-btn {
+            border: none;
+            background: #55b5ed;
+            color: white;
+            border-radius: 4px;
+            padding: 7px 12px;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        .view-btn:hover {
+            background: #278bd0;
+        }
+
+        /* ================= MAP ================= */
+
+        .map-container {
+            background: white;
+            border: 1px solid #d5e7f4;
+            border-radius: 8px;
+            padding: 8px;
+            min-height: 470px;
+        }
+
+        #map {
+            width: 100%;
+            height: 455px;
+            border-radius: 6px;
+        }
+                /* ================= NEXT BUTTON ================= */
+
+        .page-navigation {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 25px;
+        }
+
+        .next-btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #55b5ed, #278bd0);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .next-btn:hover {
+            box-shadow: 0 0 20px rgba(85, 181, 237, 0.45);
+            transform: translateY(-2px);
+        }
+
+        /* ================= RESPONSIVE ================= */
+
+        @media (max-width: 850px) {
+
+            .parking-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .map-container {
+                min-height: 400px;
+            }
+
+            #map {
+                height: 380px;
+            }
+        }
+
+        @media (max-width: 600px) {
+
+            .sidebar {
+                width: 75px;
+            }
+
+            .main {
+                margin-left: 75px;
+                padding: 15px;
+            }
+
+            .side-link {
+                font-size: 8px;
+            }
+
+            .side-icon {
+                font-size: 13px;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .location-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            <div class="logo-circle">P</div>
+            Smart Parking
+        </div>
+
+        <a href="{{ url_for('nearby_parking') }}" class="side-link active">
+            <span class="side-icon">📍</span>
+            Find Parking
+        </a>
+
+        <a href="{{ url_for('my_bookings') }}" class="side-link">
+            <span class="side-icon">▣</span>
+            My Bookings
+        </a>
+
+        <a href="{{ url_for('vehicles') }}" class="side-link">
+            <span class="side-icon">🚗</span>
+            My Vehicles
+        </a>
+
+    </aside>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="main">
+
+        <h1 class="page-title">Nearby Parking Locations</h1>
+
+        <p class="page-subtitle">
+            Find available parking spaces near your location.
+        </p>
+
+
+        <!-- SEARCH -->
+
+        <div class="search-box">
+
+            <input
+                type="text"
+                id="searchLocation"
+                placeholder="Search location..."
+            >
+
+            <button class="location-btn" onclick="detectLocation()">
+                📍 Use My Location
+            </button>
+
+        </div>
+
+
+        <!-- PARKING + MAP -->
+
+        <div class="parking-wrapper">
+
+            <!-- PARKING LIST -->
+
+            <div class="parking-list">
+
+                <div class="list-title">
+                    Nearby Parking Locations
+                </div>
+
+
+                <div class="parking-card">
+
+                    <div class="parking-name">
+                        Parking A
+                    </div>
+
+                    <div class="distance">
+                        📍 1.2 km
+                    </div>
+
+                    <div class="available">
+                        Available:
+                        <span>13/20</span>
+                    </div>
+
+                    <button
+                        class="view-btn"
+                        onclick="showParking(18.5204,73.8567,'Parking A')"
+                    >
+                        View Slots
+                    </button>
+
+                </div>
+
+
+                <div class="parking-card">
+
+                    <div class="parking-name">
+                        Parking B
+                    </div>
+
+                    <div class="distance">
+                        📍 2.1 km
+                    </div>
+
+                    <div class="available">
+                        Available:
+                        <span>8/15</span>
+                    </div>
+
+                    <button
+                        class="view-btn"
+                        onclick="showParking(18.5314,73.8446,'Parking B')"
+                    >
+                        View Slots
+                    </button>
+
+                </div>
+
+
+                <div class="parking-card">
+
+                    <div class="parking-name">
+                        Parking C
+                    </div>
+
+                    <div class="distance">
+                        📍 3.5 km
+                    </div>
+
+                    <div class="available">
+                        Available:
+                        <span>5/10</span>
+                    </div>
+
+                    <button
+                        class="view-btn"
+                        onclick="showParking(18.5089,73.8553,'Parking C')"
+                    >
+                        View Slots
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- MAP -->
+
+            <div class="map-container">
+
+                <div id="map"></div>
+
+            </div>
+
+        </div>
+        <!-- NEXT PAGE -->
+        <div class="page-navigation">
+            <a href="{{ url_for('parking_slots') }}" class="next-btn">
+                Next → Parking Slots
+            </a>
+        </div>
+    </main>
+
+
+    <!-- Leaflet -->
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+
+// ================= MAP =================
+
+const map = L.map('map').setView([18.5204, 73.8567], 13);
+
+L.tileLayer(
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap'
+    }
+).addTo(map);
+
+
+// ================= VARIABLES =================
+
+let userLat = null;
+let userLng = null;
+let userMarker = null;
+let parkingMarkers = L.layerGroup().addTo(map);
+let routeLayer = null;
+
+
+// ================= DISTANCE =================
+
+function calculateDistance(lat1, lon1, lat2, lon2) {
+
+    const R = 6371;
+
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+
+    const a =
+        Math.sin(dLat / 2) ** 2 +
+        Math.cos(lat1 * Math.PI / 180) *
+        Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) ** 2;
+
+    return R * 2 * Math.atan2(
+        Math.sqrt(a),
+        Math.sqrt(1 - a)
+    );
+}
+
+
+// ================= DETECT LOCATION =================
+
+function detectLocation() {
+
+    if (!navigator.geolocation) {
+        alert("Geolocation is not supported.");
+        return;
+    }
+
+    document.getElementById("parkingResults").innerHTML =
+        "<p>Detecting your location...</p>";
+
+    navigator.geolocation.getCurrentPosition(
+
+        async function(position) {
+
+            userLat = position.coords.latitude;
+            userLng = position.coords.longitude;
+
+            map.setView([userLat, userLng], 14);
+
+            if (userMarker) {
+                map.removeLayer(userMarker);
+            }
+
+            userMarker = L.marker([userLat, userLng])
+                .addTo(map)
+                .bindPopup("<b>Your Current Location</b>")
+                .openPopup();
+
+            await loadNearbyParking();
+
+        },
+
+        function(error) {
+
+            document.getElementById("parkingResults").innerHTML =
+                "<p>Location permission or GPS is unavailable.</p>";
+
+            alert("Unable to detect location. Please allow location access.");
+
+        },
+
+        {
+            enableHighAccuracy: true,
+            timeout: 15000,
+            maximumAge: 0
+        }
+
+    );
+}
+
+
+// ================= NEARBY PARKING =================
+
+async function loadNearbyParking() {
+
+    const results = document.getElementById("parkingResults");
+
+    results.innerHTML = "<p>Searching nearby parking...</p>";
+
+    const query = `
+        [out:json][timeout:25];
+        (
+          node(around:5000,${userLat},${userLng})["amenity"="parking"];
+          way(around:5000,${userLat},${userLng})["amenity"="parking"];
+          relation(around:5000,${userLat},${userLng})["amenity"="parking"];
+        );
+        out center tags;
+    `;
+
+    const servers = [
+        "https://overpass-api.de/api/interpreter",
+        "https://overpass.kumi.systems/api/interpreter"
+    ];
+
+    let data = null;
+
+    for (const server of servers) {
+
+        try {
+
+            const response = await fetch(server, {
+                method: "POST",
+                body: new URLSearchParams({ data: query })
+            });
+
+            if (!response.ok) {
+                continue;
+            }
+
+            data = await response.json();
+            break;
+
+        } catch (error) {
+
+            console.log("Parking server unavailable:", error);
+
+        }
+
+    }
+
+    if (!data) {
+
+        results.innerHTML =
+            "<p>Parking search service is unavailable. Please try again.</p>";
+
+        return;
+    }
+
+    parkingMarkers.clearLayers();
+
+    const parkings = data.elements.map(place => {
+
+        const lat = place.lat ?? place.center?.lat;
+        const lng = place.lon ?? place.center?.lon;
+
+        if (lat == null || lng == null) {
+            return null;
+        }
+
+        return {
+            name: place.tags?.name || "Parking Location",
+            lat: lat,
+            lng: lng,
+            distance: calculateDistance(
+                userLat, userLng, lat, lng
+            )
+        };
+
+    }).filter(Boolean);
+
+    parkings.sort((a, b) => a.distance - b.distance);
+
+    results.innerHTML = "";
+
+    if (parkings.length === 0) {
+
+        results.innerHTML =
+            "<p>No parking locations found within 5 km.</p>";
+
+        return;
+    }
+
+    parkings.forEach(parking => {
+
+        L.marker([
+            parking.lat,
+            parking.lng
+        ]).addTo(parkingMarkers)
+        .bindPopup("<b>" + parking.name + "</b>");
+
+        const card = document.createElement("div");
+        card.className = "parking-card";
+
+        const name = document.createElement("div");
+        name.className = "parking-name";
+        name.textContent = parking.name;
+
+        const distance = document.createElement("div");
+        distance.className = "distance";
+        distance.textContent =
+            "📍 " + parking.distance.toFixed(2) + " km away";
+
+        const availability = document.createElement("div");
+        availability.className = "available";
+        availability.textContent =
+            "Live slot availability not provided";
+
+        const button = document.createElement("button");
+        button.className = "view-btn";
+        button.textContent = "View Directions";
+
+        button.onclick = function() {
+            showParking(
+                parking.lat,
+                parking.lng,
+                parking.name
+            );
+        };
+
+        card.appendChild(name);
+        card.appendChild(distance);
+        card.appendChild(availability);
+        card.appendChild(button);
+
+        results.appendChild(card);
+
+    });
+
+}
+
+
+// ================= VIEW PARKING + DIRECTIONS =================
+
+async function showParking(lat, lng, name) {
+
+    if (userLat === null || userLng === null) {
+        alert("Please detect your current location first.");
+        return;
+    }
+
+    if (routeLayer) {
+        map.removeLayer(routeLayer);
+    }
+
+    try {
+
+        const url =
+            `https://router.project-osrm.org/route/v1/driving/` +
+            `${userLng},${userLat};${lng},${lat}` +
+            `?overview=full&geometries=geojson`;
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error("Route service unavailable");
+        }
+
+        const data = await response.json();
+
+        if (!data.routes || data.routes.length === 0) {
+            throw new Error("Route not found");
+        }
+
+        routeLayer = L.geoJSON(
+            data.routes[0].geometry,
+            {
+                style: {
+                    color: "#278bd0",
+                    weight: 5
+                }
+            }
+        ).addTo(map);
+
+        map.fitBounds(routeLayer.getBounds(), {
+            padding: [30, 30]
+        });
+
+        const distance =
+            (data.routes[0].distance / 1000).toFixed(2);
+
+        const duration =
+            Math.ceil(data.routes[0].duration / 60);
+
+        L.popup()
+            .setLatLng([lat, lng])
+            .setContent(
+                "<b>" + name + "</b><br>" +
+                "Distance: " + distance + " km<br>" +
+                "Estimated time: " + duration + " minutes"
+            )
+            .openOn(map);
+
+    } catch (error) {
+
+        alert("Unable to load directions. Please try again.");
+
+        console.log(error);
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>

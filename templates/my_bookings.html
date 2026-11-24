@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings | Smart Parking</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #eaf6ff, #ffffff, #d9efff);
+            color: #243b53;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 105px;
+            height: 100vh;
+            background: linear-gradient(180deg, #d9efff, #c5e5fa);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 25px;
+            z-index: 1000;
+        }
+
+        .sidebar-logo {
+            color: #243b53;
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 35px;
+            text-align: center;
+        }
+
+        .sidebar-menu {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .sidebar-menu a {
+            width: 100%;
+            min-height: 58px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            color: #435d76;
+            text-decoration: none;
+            font-size: 11px;
+            transition: 0.25s;
+        }
+
+        .sidebar-menu a .icon {
+            font-size: 19px;
+        }
+
+        .sidebar-menu a:hover {
+            color: #278bd0;
+            background: rgba(85, 181, 237, 0.16);
+        }
+
+        .sidebar-menu a.active {
+            color: #ffffff;
+            background: linear-gradient(90deg, #55b5ed, #278bd0);
+            border-left: 3px solid #278bd0;
+        }
+
+        .main {
+            margin-left: 105px;
+            min-height: 100vh;
+            padding: 35px 45px;
+        }
+
+        .page-header {
+            margin-bottom: 28px;
+        }
+
+        .page-header h1 {
+            font-size: 30px;
+            color: #243b53;
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            color: #71869b;
+            font-size: 14px;
+        }
+
+        .small-title {
+            color: #278bd0;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .bookings-card {
+            background: #ffffff;
+            border: 1px solid #d5e7f4;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(65, 130, 170, 0.08);
+            transition: 0.25s;
+        }
+
+        .bookings-card:hover {
+            box-shadow: 0 10px 30px rgba(85, 181, 237, 0.12);
+        }
+
+        .card-header {
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #d5e7f4;
+            gap: 15px;
+        }
+
+        .card-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: #243b53;
+        }
+
+        .card-subtitle {
+            margin-top: 5px;
+            font-size: 12px;
+            color: #71869b;
+        }
+
+        .booking-count {
+            background: #e5f3ff;
+            color: #278bd0;
+            padding: 7px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+        }
+
+        thead {
+            background: #f2f8ff;
+        }
+
+        th {
+            padding: 16px 18px;
+            text-align: left;
+            font-size: 12px;
+            font-weight: 700;
+            color: #435d76;
+            border-bottom: 1px solid #d5e7f4;
+        }
+
+        td {
+            padding: 17px 18px;
+            font-size: 13px;
+            color: #435d76;
+            border-bottom: 1px solid #e7f0f7;
+            white-space: nowrap;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr {
+            transition: 0.2s;
+        }
+
+        tbody tr:hover {
+            background: #f2f8ff;
+        }
+
+        .booking-id {
+            color: #278bd0;
+            font-weight: 700;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .status-booked {
+            background: #e5f3ff;
+            color: #278bd0;
+        }
+
+        .status-pending {
+            background: #fff7e6;
+            color: #b7791f;
+        }
+
+        .status-entered {
+            background: #e8f1ff;
+            color: #2563eb;
+        }
+
+        .status-completed {
+            background: #eef2f7;
+            color: #526174;
+        }
+
+        .status-cancelled {
+            background: #fff1f2;
+            color: #dc2626;
+        }
+
+        .button-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 25px;
+        }
+
+        .action-button {
+            display: inline-block;
+            padding: 11px 21px;
+            background: linear-gradient(135deg, #55b5ed, #278bd0);
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 6px 18px rgba(85, 181, 237, 0.22);
+            transition: 0.25s;
+        }
+
+        .action-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(85, 181, 237, 0.45);
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 11px 21px;
+            background: #ffffff;
+            color: #278bd0;
+            text-decoration: none;
+            border: 1px solid #55b5ed;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: 0.25s;
+        }
+
+        .back-button:hover {
+            box-shadow: 0 0 18px rgba(85, 181, 237, 0.35);
+        }
+
+        .empty {
+            text-align: center;
+            padding: 70px 20px;
+        }
+
+        .empty-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #e5f3ff;
+            font-size: 32px;
+        }
+
+        .empty h2 {
+            font-size: 21px;
+            color: #243b53;
+            margin-bottom: 8px;
+        }
+
+        .empty p {
+            color: #71869b;
+            font-size: 14px;
+            margin-bottom: 22px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 75px;
+            }
+
+            .sidebar-logo {
+                font-size: 11px;
+            }
+
+            .sidebar-menu a {
+                font-size: 9px;
+            }
+
+            .sidebar-menu a .icon {
+                font-size: 17px;
+            }
+
+            .main {
+                margin-left: 75px;
+                padding: 25px 18px;
+            }
+
+            .page-header h1 {
+                font-size: 24px;
+            }
+
+            .card-header {
+                padding: 17px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main {
+                padding: 22px 12px;
+            }
+
+            .button-area {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .button-area a {
+                text-align: center;
+            }
+
+            .card-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <aside class="sidebar">
+
+        <div class="sidebar-logo">
+            Smart<br>Parking
+        </div>
+
+        <div class="sidebar-menu">
+
+            <a href="{{ url_for('nearby_parking') }}">
+                <span class="icon">🗺</span>
+                <span>Parking</span>
+            </a>
+
+            <a href="{{ url_for('parking_slots') }}">
+                <span class="icon">🅿</span>
+                <span>Slots</span>
+            </a>
+
+            <a href="{{ url_for('vehicles') }}">
+                <span class="icon">🚗</span>
+                <span>Vehicles</span>
+            </a>
+
+            <a href="{{ url_for('my_bookings') }}" class="active">
+                <span class="icon">📋</span>
+                <span>Bookings</span>
+            </a>
+
+            <a href="{{ url_for('location') }}">
+                <span class="icon">📍</span>
+                <span>GPS</span>
+            </a>
+
+            <a href="{{ url_for('entry_exit') }}">
+                <span class="icon">🚪</span>
+                <span>Entry/Exit</span>
+            </a>
+
+        </div>
+
+    </aside>
+
+    <main class="main">
+
+        <div class="page-header">
+
+            <div class="small-title">
+                SMART PARKING MANAGEMENT & VEHICLE TRACKING
+            </div>
+
+            <h1>My Bookings</h1>
+
+            <p>
+                View your parking booking history and current booking details.
+            </p>
+
+        </div>
+
+        <div class="bookings-card">
+
+            {% if bookings %}
+
+                <div class="card-header">
+
+                    <div>
+                        <div class="card-title">Booking History</div>
+
+                        <div class="card-subtitle">
+                            Your parking reservations and booking details
+                        </div>
+                    </div>
+
+                    <div class="booking-count">
+                        {{ bookings|length }} Bookings
+                    </div>
+
+                </div>
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>Booking ID</th>
+                                <th>Vehicle</th>
+                                <th>Type</th>
+                                <th>Slot</th>
+                                <th>Booking Date</th>
+                                <th>Entry</th>
+                                <th>Exit</th>
+                                <th>Fee</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            {% for booking in bookings %}
+
+                            <tr>
+
+                                <td>
+                                    <span class="booking-id">
+                                        #{{ booking[0] }}
+                                    </span>
+                                </td>
+
+                                <td>{{ booking[1] }}</td>
+                                <td>{{ booking[2] }}</td>
+                                <td>{{ booking[3] }}</td>
+
+                                <td>
+                                    {% if booking[4] %}
+                                        {{ booking[4].strftime('%d-%m-%Y %I:%M %p') }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% if booking[5] %}
+                                        {{ booking[5].strftime('%d-%m-%Y %I:%M %p') }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% if booking[6] %}
+                                        {{ booking[6].strftime('%d-%m-%Y %I:%M %p') }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    ₹{{ "%.2f"|format(booking[7] or 0) }}
+                                </td>
+
+                                <td>
+
+                                    {% if booking[8] == "Pending Payment" %}
+                                        <span class="status status-pending">
+                                            Pending Payment
+                                        </span>
+
+                                    {% elif booking[8] == "Booked" %}
+                                        <span class="status status-booked">
+                                            Booked
+                                        </span>
+
+                                    {% elif booking[8] == "Entered" %}
+                                        <span class="status status-entered">
+                                            Entered
+                                        </span>
+
+                                    {% elif booking[8] == "Cancelled" %}
+                                        <span class="status status-cancelled">
+                                            Cancelled
+                                        </span>
+
+                                    {% else %}
+                                        <span class="status status-completed">
+                                            Completed
+                                        </span>
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            {% else %}
+
+                <div class="empty">
+
+                    <div class="empty-icon">🅿️</div>
+
+                    <h2>No Bookings Yet</h2>
+
+                    <p>
+                        You don't have any parking bookings yet.
+                        Book your first parking slot now.
+                    </p>
+
+                    <a href="{{ url_for('parking_slots') }}" class="action-button">
+                        Book Parking
+                    </a>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+        <div class="button-area">
+
+            <a href="{{ url_for('parking_slots') }}" class="back-button">
+                ← Back to Parking Slots
+            </a>
+
+            {% if bookings|selectattr(8, 'equalto', 'Pending Payment')|list %}
+            
+            <a href="{{ url_for('booking_details') }}" class="action-button">
+                Next → Booking Details
+            </a>
+
+            {% endif %}
+
+        </div>
+
+    </main>
+
+</body>
+</html>

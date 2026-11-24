@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Admin Dashboard | Smart Parking</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f2f8ff;
+            color: #243b53;
+            min-height: 100vh;
+        }
+
+        /* LAYOUT */
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            width: 210px;
+            min-height: 100vh;
+            background: linear-gradient(180deg, #d9efff, #c5e5fa);
+            padding: 18px 12px;
+            flex-shrink: 0;
+            border-right: 1px solid #b9dced;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #243b53;
+            font-size: 15px;
+            font-weight: 700;
+            padding: 0 8px 25px;
+        }
+
+        .brand-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #278bd0;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 700;
+        }
+
+        .menu {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .menu a {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 10px;
+            border-radius: 5px;
+            color: #435d76;
+            text-decoration: none;
+            font-size: 12px;
+            transition: 0.25s ease;
+        }
+
+        .menu a:hover {
+            background: #b9e0fa;
+            box-shadow: 0 0 12px rgba(39, 139, 208, 0.15);
+        }
+
+        .menu a.active {
+            background: linear-gradient(90deg, #55b5ed, #278bd0);
+            color: white;
+            box-shadow: 0 0 13px rgba(39, 139, 208, 0.25);
+        }
+
+        .menu-icon {
+            width: 17px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        /* MAIN */
+
+        .main {
+            flex: 1;
+            min-width: 0;
+            background: linear-gradient(135deg, #f7fbff, #edf7ff);
+            padding: 30px 32px;
+        }
+
+        /* TOP BAR */
+
+        .top-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 15px;
+        }
+
+        .home-btn {
+            background: linear-gradient(135deg, #55b5ed, #278bd0);
+            color: white;
+            text-decoration: none;
+            padding: 9px 16px;
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: 700;
+            transition: 0.2s ease;
+        }
+
+        .home-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 12px rgba(39, 139, 208, 0.35);
+        }
+
+        /* HEADER */
+
+        .page-header {
+            margin-bottom: 22px;
+        }
+
+        .page-header h1 {
+            font-size: 22px;
+            color: #243b53;
+            margin-bottom: 6px;
+        }
+
+        .page-header p {
+            color: #71869b;
+            font-size: 12px;
+        }
+
+        /* STAT CARDS */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 13px;
+            margin-bottom: 22px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #d5e7f4;
+            border-radius: 7px;
+            padding: 18px 16px;
+            min-height: 92px;
+            box-shadow: 0 2px 7px rgba(39, 91, 130, 0.06);
+            transition: 0.25s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px rgba(39, 139, 208, 0.16);
+        }
+
+        .stat-label {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            font-size: 11px;
+            color: #697f94;
+            margin-bottom: 9px;
+        }
+
+        .stat-icon {
+            width: 22px;
+            height: 22px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            background: #e5f3ff;
+            color: #278bd0;
+        }
+
+        .stat-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: #243b53;
+        }
+
+        .stat-value.available {
+            color: #18a979;
+        }
+
+        .stat-value.occupied {
+            color: #ef5555;
+        }
+
+        .stat-value.revenue {
+            color: #243b53;
+        }
+
+        /* RECENT BOOKINGS */
+
+        .booking-card {
+            background: white;
+            border: 1px solid #d5e7f4;
+            border-radius: 7px;
+            box-shadow: 0 2px 7px rgba(39, 91, 130, 0.06);
+            overflow: hidden;
+        }
+
+        .booking-header {
+            padding: 18px 18px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .booking-header h2 {
+            font-size: 15px;
+            color: #243b53;
+        }
+
+        .booking-header span {
+            color: #8a9bad;
+            font-size: 11px;
+        }
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 650px;
+        }
+
+        th {
+            background: #eaf5ff;
+            color: #526d85;
+            text-align: left;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 12px 18px;
+            border-top: 1px solid #e0edf7;
+            border-bottom: 1px solid #d8e8f4;
+        }
+
+        td {
+            padding: 13px 18px;
+            color: #43566b;
+            font-size: 11px;
+            border-bottom: 1px solid #edf3f8;
+        }
+
+        tr:hover td {
+            background: #f2f9ff;
+        }
+
+        .vehicle-number {
+            font-weight: 700;
+            color: #263f57;
+        }
+
+        /* STATUS */
+
+        .status {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 12px;
+            font-size: 9px;
+            font-weight: 700;
+        }
+
+        .status-booked {
+            background: #e4f3ff;
+            color: #278bd0;
+        }
+
+        .status-entered {
+            background: #e7f0ff;
+            color: #3569d5;
+        }
+
+        .status-completed {
+            background: #e4f8ee;
+            color: #1b9a70;
+        }
+
+        .status-other {
+            background: #f0f5f9;
+            color: #687f94;
+        }
+
+        .fee {
+            font-weight: 700;
+            color: #263f57;
+        }
+
+        .empty {
+            padding: 35px;
+            text-align: center;
+            color: #8a9bad;
+            font-size: 12px;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 900px) {
+
+            .sidebar {
+                width: 175px;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .main {
+                padding: 25px 20px;
+            }
+
+        }
+
+        @media (max-width: 650px) {
+
+            .layout {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                min-height: auto;
+                padding: 12px;
+            }
+
+            .brand {
+                justify-content: center;
+                padding-bottom: 12px;
+            }
+
+            .menu {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .menu a {
+                padding: 8px 9px;
+                font-size: 11px;
+            }
+
+            .main {
+                padding: 22px 14px;
+            }
+
+            .page-header h1 {
+                font-size: 20px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr 1fr;
+                gap: 9px;
+            }
+
+            .stat-card {
+                padding: 14px 12px;
+            }
+
+            .stat-value {
+                font-size: 19px;
+            }
+
+        }
+
+        @media (max-width: 400px) {
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                P
+            </div>
+
+            Smart Parking
+
+        </div>
+
+        <div class="menu">
+
+            <a href="{{ url_for('admin_dashboard') }}" class="active">
+                <span class="menu-icon">▣</span>
+                Dashboard
+            </a>
+
+            <a href="{{ url_for('parking_slots') }}">
+                <span class="menu-icon">▦</span>
+                Manage Slots
+            </a>
+
+            <a href="{{ url_for('my_bookings') }}">
+                <span class="menu-icon">▤</span>
+                Bookings
+            </a>
+
+            <a href="{{ url_for('vehicles') }}">
+                <span class="menu-icon">▣</span>
+                Vehicles
+            </a>
+
+            <a href="{{ url_for('entry_exit') }}">
+                <span class="menu-icon">↔</span>
+                Entry / Exit
+            </a>
+
+            <a href="{{ url_for('location') }}">
+                <span class="menu-icon">◇</span>
+                GPS / Location
+            </a>
+
+
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+
+    <main class="main">
+
+        <!-- HOME BUTTON -->
+
+        <div class="top-bar">
+
+    <a href="{{ url_for('home') }}" class="home-btn">
+        Back to Home
+    </a>
+
+</div>
+
+
+        <!-- HEADER -->
+
+        <div class="page-header">
+
+            <h1>
+                Admin Dashboard
+            </h1>
+
+            <p>
+                Smart Parking Management & Vehicle Tracking overview
+            </p>
+
+        </div>
+
+
+        <!-- STATISTICS -->
+
+        <div class="stats">
+
+            <!-- TOTAL SLOTS -->
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+
+                    <div class="stat-icon">
+                        ▣
+                    </div>
+
+                    Total Slots
+
+                </div>
+
+                <div class="stat-value">
+                    {{ total_slots }}
+                </div>
+
+            </div>
+
+
+            <!-- AVAILABLE -->
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+
+                    <div class="stat-icon"
+                         style="color:#18a979;background:#e6f8f1;">
+                        ✓
+                    </div>
+
+                    Available
+
+                </div>
+
+                <div class="stat-value available">
+                    {{ available_slots }}
+                </div>
+
+            </div>
+
+
+            <!-- OCCUPIED -->
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+
+                    <div class="stat-icon"
+                         style="color:#ef5555;background:#ffeded;">
+                        ●
+                    </div>
+
+                    Occupied
+
+                </div>
+
+                <div class="stat-value occupied">
+                    {{ occupied_slots }}
+                </div>
+
+            </div>
+
+
+            <!-- TOTAL REVENUE -->
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+
+                    <div class="stat-icon">
+                        ₹
+                    </div>
+
+                    Total Revenue
+
+                </div>
+
+                <div class="stat-value revenue">
+                    ₹{{ "%.0f"|format(total_revenue or 0) }}
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- RECENT BOOKINGS -->
+
+        <div class="booking-card">
+
+            <div class="booking-header">
+
+                <h2>
+                    Recent Bookings
+                </h2>
+
+                <span>
+                    Latest parking activity
+                </span>
+
+            </div>
+
+
+            {% if recent_bookings %}
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>VEHICLE NO.</th>
+                            <th>SLOT NO.</th>
+                            <th>STATUS</th>
+                            <th>TIME</th>
+                            <th>FEE</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        {% for booking in recent_bookings %}
+
+                        <tr>
+
+                            <td class="vehicle-number">
+                                {{ booking[1] }}
+                            </td>
+
+                            <td>
+                                {{ booking[2] }}
+                            </td>
+
+                            <td>
+
+                                {% if booking[4] == 'Booked' %}
+
+                                    <span class="status status-booked">
+                                        Booked
+                                    </span>
+
+                                {% elif booking[4] == 'Entered' %}
+
+                                    <span class="status status-entered">
+                                        Entered
+                                    </span>
+
+                                {% elif booking[4] == 'Completed' %}
+
+                                    <span class="status status-completed">
+                                        Completed
+                                    </span>
+
+                                {% else %}
+
+                                    <span class="status status-other">
+                                        {{ booking[4] }}
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+
+                            <td>
+
+                                {% if booking[3] %}
+                                    {{ booking[3].strftime('%d %b %Y, %I:%M %p') }}
+                                {% else %}
+                                    -
+                                {% endif %}
+
+                            </td>
+
+                            <td class="fee">
+                                ₹{{ "%.0f"|format(booking[5] or 0) }}
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            {% else %}
+
+            <div class="empty">
+                No bookings found.
+            </div>
+
+            {% endif %}
+
+        </div>
+
+    </main>
+
+</div>
+
+</body>
+</html>

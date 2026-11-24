@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Slot Details | Smart Parking</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #eaf6ff, #ffffff, #d9efff);
+            color: #243b53;
+            min-height: 100vh;
+        }
+
+        /* NAVBAR */
+        nav {
+            height: 70px;
+            background: linear-gradient(90deg, #d9efff, #ffffff);
+            border-bottom: 1px solid #b9dced;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 5%;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: bold;
+            color: #243b53;
+        }
+
+        .logo span {
+            color: #278bd0;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+
+        .nav-links a {
+            color: #435d76;
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #278bd0;
+        }
+
+        .home-btn {
+            padding: 9px 18px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #55b5ed, #278bd0);
+            color: white !important;
+            font-weight: 600;
+        }
+
+        .home-btn:hover {
+            background: #278bd0;
+        }
+
+        /* PAGE */
+        .page {
+            width: 90%;
+            max-width: 1150px;
+            margin: 45px auto;
+        }
+
+        .tag {
+            color: #278bd0;
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            font-size: 36px;
+            margin-bottom: 8px;
+            color: #243b53;
+        }
+
+        .subtitle {
+            color: #71869b;
+            font-size: 15px;
+            margin-bottom: 30px;
+        }
+
+        /* MAIN CARD */
+        .slot-panel {
+            background: white;
+            color: #243b53;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(85, 145, 185, 0.14);
+        }
+
+        .panel-title {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #243b53;
+        }
+
+        .panel-subtitle {
+            color: #71869b;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        /* SLOT INFORMATION */
+        .slot-box {
+            border: 1px solid #d5e7f4;
+            border-radius: 14px;
+            padding: 25px;
+            background: #f2f8ff;
+        }
+
+        .slot-number {
+            text-align: center;
+            font-size: 32px;
+            font-weight: 700;
+            color: #278bd0;
+            margin-bottom: 22px;
+        }
+
+        .details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .detail {
+            border: 1px solid #d5e7f4;
+            border-radius: 10px;
+            padding: 16px;
+            background: white;
+        }
+
+        .detail-label {
+            display: block;
+            color: #71869b;
+            font-size: 13px;
+            margin-bottom: 7px;
+        }
+
+        .detail-value {
+            color: #243b53;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        /* AVAILABLE STATUS */
+.available {
+    color: #15803d;
+    background: #dcfce7;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    display: inline-block;
+}
+
+/* OCCUPIED STATUS */
+.occupied {
+    color: #dc2626;
+    background: #fee2e2;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    display: inline-block;
+}
+
+        /* ACTION */
+        .action-area {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 30px;
+        }
+
+        .next-btn {
+            border: none;
+            background: linear-gradient(135deg, #55b5ed, #278bd0);
+            color: white;
+            padding: 13px 25px;
+            border-radius: 9px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .next-btn:hover {
+            background: #278bd0;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 20px rgba(85, 181, 237, 0.3);
+        }
+
+        /* BACK */
+        .back-area {
+            margin-top: 18px;
+        }
+
+        .back-link {
+            color: #278bd0;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+
+            nav {
+                padding: 0 20px;
+            }
+
+            .nav-links {
+                gap: 12px;
+            }
+
+            .nav-links a:not(.home-btn) {
+                display: none;
+            }
+
+            .page {
+                width: 92%;
+                margin: 30px auto;
+            }
+
+            h1 {
+                font-size: 29px;
+            }
+
+            .slot-panel {
+                padding: 20px;
+            }
+
+            .details {
+                grid-template-columns: 1fr;
+            }
+
+            .action-area {
+                justify-content: stretch;
+            }
+
+            .next-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+    <nav>
+
+        <div class="logo">
+            Smart<span>Parking</span>
+        </div>
+
+        <div class="nav-links">
+    <a href="{{ url_for('vehicles') }}">Vehicles</a>
+</div>
+
+    </nav>
+
+
+    <!-- PAGE -->
+    <main class="page">
+
+        <div class="tag">
+            SMART PARKING MANAGEMENT & VEHICLE TRACKING
+        </div>
+
+        <h1>Slot Details</h1>
+
+        <p class="subtitle">
+            Review your selected parking slot before proceeding to My Bookings.
+        </p>
+
+
+        <!-- SLOT CARD -->
+        <div class="slot-panel">
+
+            <div class="panel-title">
+                Selected Parking Slot
+            </div>
+
+            <div class="panel-subtitle">
+                Your parking location and vehicle information are shown below.
+            </div>
+
+
+            <div class="slot-box">
+
+                <div class="slot-number">
+                    Slot {{ slot[1] }}
+                </div>
+
+
+                <div class="details">
+
+                    <!-- VEHICLE -->
+                    <div class="detail">
+
+                        <span class="detail-label">
+                            Vehicle Number
+                        </span>
+
+                        <span class="detail-value">
+                            {{ vehicle[1] }}
+                        </span>
+
+                    </div>
+
+
+                    <!-- VEHICLE TYPE -->
+                    <div class="detail">
+
+                        <span class="detail-label">
+                            Vehicle Type
+                        </span>
+
+                        <span class="detail-value">
+                            {{ vehicle[2] }}
+                        </span>
+
+                    </div>
+
+
+                    <!-- SLOT -->
+                    <div class="detail">
+
+                        <span class="detail-label">
+                            Parking Slot
+                        </span>
+
+                        <span class="detail-value">
+                            {{ slot[1] }}
+                        </span>
+
+                    </div>
+
+
+                    <!-- STATUS -->
+<div class="detail">
+
+    <span class="detail-label">
+        Slot Status
+    </span>
+
+    <span class="{% if slot[2] == 'Available' %}available{% else %}occupied{% endif %}">
+        {{ slot[2] }}
+    </span>
+
+</div>
+                </div>
+
+            </div>
+
+
+                <!-- NEXT TO MY BOOKINGS -->
+<div class="action-area">
+
+    <a href="{{ url_for('my_bookings') }}" class="next-btn">
+        Next → My Bookings
+    </a>
+
+</div>
+
+
+            <!-- BACK -->
+          <div class="back-area">
+
+    <a href="{{ url_for('parking_slots') }}" class="back-link">
+        ← Back to Parking Slots
+    </a>
+
+</div>
+
+        </div>
+
+    </main>
+
+</body>
+</html>

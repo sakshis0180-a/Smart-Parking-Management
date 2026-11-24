@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Parking Slots | Smart Parking</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #eaf6ff, #ffffff, #d9efff);
+            color: #243b53;
+            min-height: 100vh;
+        }
+
+        nav {
+            min-height: 72px;
+            padding: 12px 7%;
+            background: linear-gradient(90deg, #d9efff, #ffffff);
+            border-bottom: 1px solid #b9dced;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: #243b53;
+        }
+
+        .logo span {
+            color: #278bd0;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 22px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #435d76;
+            font-size: 14px;
+            transition: 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            color: #278bd0;
+            text-shadow: 0 0 12px rgba(85, 181, 237, 0.45);
+        }
+
+        .page {
+            width: 90%;
+            max-width: 1150px;
+            margin: 45px auto;
+        }
+
+        .top-section {
+            margin-bottom: 30px;
+        }
+
+        .small-title {
+            color: #278bd0;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            font-size: 38px;
+            margin-bottom: 8px;
+            color: #243b53;
+        }
+
+        .subtitle {
+            color: #71869b;
+            font-size: 15px;
+        }
+
+        .parking-panel {
+            background: #ffffff;
+            color: #243b53;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(85, 145, 185, 0.14);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .panel-header h2 {
+            font-size: 21px;
+            color: #243b53;
+        }
+
+        .legend {
+            display: flex;
+            gap: 18px;
+            font-size: 13px;
+            color: #71869b;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .green {
+            background: #22c55e;
+        }
+
+        .red {
+            background: #ef4444;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .summary-card {
+            padding: 17px;
+            background: #f0f8ff;
+            border: 1px solid #d5e7f4;
+            border-radius: 12px;
+            text-align: center;
+            transition: 0.3s ease;
+        }
+
+        .summary-card:hover {
+            box-shadow: 0 0 18px rgba(85, 181, 237, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .summary-card h3 {
+            font-size: 26px;
+            margin-bottom: 5px;
+            color: #278bd0;
+        }
+
+        .summary-card p {
+            font-size: 13px;
+            color: #71869b;
+        }
+
+        .parking-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+        }
+
+        .slot {
+            min-height: 135px;
+            border-radius: 13px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #d5e7f4;
+            transition: 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .slot.available {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+        }
+
+        .slot.occupied {
+            background: #fff1f2;
+            border-color: #fecdd3;
+            cursor: not-allowed;
+            opacity: 0.85;
+        }
+
+        .slot.available:hover {
+            box-shadow: 0 0 20px rgba(85, 181, 237, 0.4);
+            transform: translateY(-4px);
+        }
+
+        .slot.selected {
+            border: 2px solid #278bd0;
+            box-shadow: 0 0 20px rgba(39, 139, 208, 0.35);
+            background: #e0f2fe;
+        }
+
+        .slot-number {
+            font-size: 19px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #243b53;
+        }
+
+        .slot-icon {
+            font-size: 25px;
+            margin-bottom: 7px;
+        }
+
+        .slot-status {
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .slot.available .slot-status {
+            color: #16a34a;
+        }
+
+        .slot.occupied .slot-status {
+            color: #dc2626;
+        }
+
+        .selected-label {
+            display: none;
+            position: absolute;
+            top: 7px;
+            right: 7px;
+            font-size: 10px;
+            color: #278bd0;
+            font-weight: bold;
+        }
+
+        .slot.selected .selected-label {
+            display: block;
+        }
+
+        .booking-area {
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid #d5e7f4;
+            display: flex;
+            align-items: end;
+            gap: 18px;
+            flex-wrap: wrap;
+        }
+
+        .field {
+            flex: 1;
+            min-width: 220px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #435d76;
+        }
+
+        .field select {
+            width: 100%;
+            padding: 12px 13px;
+            border: 1px solid #b9dced;
+            border-radius: 9px;
+            background: #ffffff;
+            color: #435d76;
+            outline: none;
+        }
+
+        .field select:focus {
+            border-color: #55b5ed;
+            box-shadow: 0 0 10px rgba(85, 181, 237, 0.22);
+        }
+
+        .book-btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 9px;
+            background: linear-gradient(135deg, #55b5ed, #278bd0);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .book-btn:hover {
+            box-shadow: 0 0 20px rgba(85, 181, 237, 0.55);
+            transform: translateY(-2px);
+        }
+
+        .book-btn:disabled {
+            background: #a8bdca;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .message {
+            padding: 12px 15px;
+            border-radius: 9px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .success {
+            background: #ecfdf5;
+            color: #047857;
+            border: 1px solid #a7f3d0;
+        }
+
+        .error {
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+        }
+
+        .note {
+            margin-top: 20px;
+            color: #71869b;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .page-navigation {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 12px 22px;
+            background: #ffffff;
+            color: #278bd0;
+            border: 1px solid #55b5ed;
+            border-radius: 9px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: 0.3s ease;
+        }
+
+        .back-button:hover {
+            box-shadow: 0 0 18px rgba(85, 181, 237, 0.4);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 850px) {
+            .parking-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 600px) {
+            nav {
+                padding: 12px 5%;
+                flex-direction: column;
+            }
+
+            .nav-links {
+                justify-content: center;
+            }
+
+            .page {
+                width: 92%;
+                margin: 30px auto;
+            }
+
+            h1 {
+                font-size: 30px;
+            }
+
+            .parking-panel {
+                padding: 20px;
+            }
+
+            .panel-header {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .summary {
+                grid-template-columns: 1fr;
+            }
+
+            .parking-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+
+            .slot {
+                min-height: 110px;
+            }
+
+            .booking-area {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .field {
+                width: 100%;
+            }
+
+            .page-navigation {
+                flex-direction: column;
+            }
+
+            .back-button,
+            .book-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVBAR -->
+
+    <nav>
+
+        <div class="logo">
+            Smart<span>Parking</span>
+        </div>
+
+        <div class="nav-links">
+
+            <a href="{{ url_for('vehicles') }}">Vehicles</a>
+
+            <a href="{{ url_for('location') }}">Location / GPS</a>
+
+        </div>
+
+    </nav>
+
+
+    <main class="page">
+
+        <!-- PAGE HEADING -->
+
+        <div class="top-section">
+
+            <div class="small-title">
+                SMART PARKING MANAGEMENT & VEHICLE TRACKING
+            </div>
+
+            <h1>Parking Slot Availability</h1>
+
+            <p class="subtitle">
+                Check available parking spaces and select your preferred slot.
+            </p>
+
+        </div>
+
+
+        <section class="parking-panel">
+
+            <div class="panel-header">
+
+                <h2>Parking Area</h2>
+
+                <div class="legend">
+
+                    <div class="legend-item">
+                        <span class="legend-dot green"></span>
+                        Available
+                    </div>
+
+                    <div class="legend-item">
+                        <span class="legend-dot red"></span>
+                        Occupied
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- SUCCESS MESSAGE -->
+
+            {% if request.args.get('booked') == '1' %}
+
+            <div class="message success">
+                Parking slot booked successfully!
+            </div>
+
+            {% endif %}
+
+
+            <!-- ERROR MESSAGE -->
+
+            {% if request.args.get('error') == 'unavailable' %}
+
+            <div class="message error">
+                This parking slot is already occupied. Please select another slot.
+            </div>
+
+            {% endif %}
+
+
+            <!-- SLOT SUMMARY -->
+
+            <div class="summary">
+
+                <div class="summary-card">
+                    <h3>{{ slots|length }}</h3>
+                    <p>Total Parking Slots</p>
+                </div>
+
+                <div class="summary-card">
+                    <h3>
+                        {{ slots|selectattr(2, 'equalto', 'Available')|list|length }}
+                    </h3>
+                    <p>Available Slots</p>
+                </div>
+
+                <div class="summary-card">
+                    <h3>
+                        {{ slots|rejectattr(2, 'equalto', 'Available')|list|length }}
+                    </h3>
+                    <p>Occupied Slots</p>
+                </div>
+
+            </div>
+
+
+            <!-- PARKING SLOTS -->
+
+            <div class="parking-grid">
+
+                {% for slot in slots %}
+
+                <div
+                    class="slot {% if slot[2] == 'Available' %}available{% else %}occupied{% endif %}"
+                    {% if slot[2] == 'Available' %}
+                    onclick="selectSlot('{{ slot[0] }}', this)"
+                    {% endif %}
+                >
+
+                    <span class="selected-label">SELECTED</span>
+
+                    <div class="slot-icon">🅿️</div>
+
+                    <div class="slot-number">
+                        {{ slot[1] }}
+                    </div>
+
+                    <div class="slot-status">
+
+                        {% if slot[2] == 'Available' %}
+                            Available
+                        {% else %}
+                            Occupied
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+                {% else %}
+
+                <p>No parking slots are available currently.</p>
+
+                {% endfor %}
+
+            </div>
+
+
+            <!-- BOOKING FORM -->
+
+            <form
+                id="parkingBookingForm"
+                class="booking-area"
+                method="POST"
+                action="{{ url_for('parking_slots') }}"
+                onsubmit="return validateBooking()"
+            >
+
+                <div class="field">
+
+                    <label for="vehicle">
+                        Select Vehicle
+                    </label>
+
+                    <select id="vehicle" name="vehicle_id" required>
+
+                        <option value="">
+                            Select your vehicle
+                        </option>
+
+                        {% for vehicle in vehicles %}
+
+                        <option value="{{ vehicle[0] }}">
+                            {{ vehicle[1] }} - {{ vehicle[2] }}
+                        </option>
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label for="slot">
+                        Select Parking Slot
+                    </label>
+
+                    <select id="slot" name="slot_id" required>
+
+                        <option value="">
+                            Select available slot
+                        </option>
+
+                        {% for slot in slots %}
+
+                            {% if slot[2] == 'Available' %}
+
+                            <option value="{{ slot[0] }}">
+                                {{ slot[1] }} - Available
+                            </option>
+
+                            {% endif %}
+
+                        {% endfor %}
+
+                    </select>
+
+                </div>
+
+            </form>
+
+        </section>
+
+
+        <!-- PAGE NAVIGATION -->
+
+        <div class="page-navigation">
+
+            <a href="{{ url_for('location') }}" class="back-button">
+                ← Back to Location
+            </a>
+
+            <button
+                type="submit"
+                form="parkingBookingForm"
+                class="book-btn"
+            >
+                Next → Slot Details
+            </button>
+
+        </div>
+
+
+        <p class="note">
+            Select a green slot to continue. Red slots are already occupied.
+        </p>
+
+    </main>
+
+
+    <!-- SLOT SELECTION JAVASCRIPT -->
+
+    <script>
+
+        const slotDropdown = document.getElementById("slot");
+
+        function selectSlot(slotId, selectedCard) {
+
+            document.querySelectorAll(".slot").forEach(function(card) {
+                card.classList.remove("selected");
+            });
+
+            selectedCard.classList.add("selected");
+
+            slotDropdown.value = slotId;
+
+        }
+
+
+        // Dropdown selection also highlights the slot
+
+        slotDropdown.addEventListener("change", function() {
+
+            document.querySelectorAll(".slot").forEach(function(card) {
+                card.classList.remove("selected");
+            });
+
+            const selectedOption = slotDropdown.options[slotDropdown.selectedIndex];
+
+            if (!slotDropdown.value) {
+                return;
+            }
+
+            document.querySelectorAll(".slot.available").forEach(function(card) {
+
+                if (
+                    card.querySelector(".slot-number").textContent.trim() ===
+                    selectedOption.textContent.split(" - ")[0].trim()
+                ) {
+
+                    card.classList.add("selected");
+
+                }
+
+            });
+
+        });
+
+
+        // Booking validation
+
+        function validateBooking() {
+
+            const vehicle = document.getElementById("vehicle").value;
+            const slot = document.getElementById("slot").value;
+
+            if (!vehicle) {
+                alert("Please select your vehicle.");
+                return false;
+            }
+
+            if (!slot) {
+                alert("Please select an available parking slot.");
+                return false;
+            }
+
+            return true;
+
+        }
+
+    </script>
+
+</body>
+</html>

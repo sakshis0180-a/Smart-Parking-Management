@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Vehicle Management | Smart Parking</title>
+
+    <style>
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: linear-gradient(135deg, #eaf6ff, #ffffff, #d9efff);
+            color: #243b53;
+            min-height: 100vh;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* SIDEBAR */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 105px;
+            height: 100vh;
+            background: linear-gradient(180deg, #d9efff, #c5e5fa);
+            color: #243b53;
+            padding: 14px 8px;
+            z-index: 1000;
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 3px 4px 18px;
+            font-size: 10px;
+            font-weight: 700;
+            white-space: nowrap;
+            color: #243b53;
+        }
+
+        .sidebar-logo-icon {
+            width: 22px;
+            height: 22px;
+            border: 2px solid #278bd0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 800;
+            color: #278bd0;
+        }
+
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+        .sidebar-menu a {
+            color: #435d76;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            padding: 8px 7px;
+            border-radius: 5px;
+            font-size: 8px;
+            transition: 0.25s ease;
+        }
+
+        .sidebar-menu a.active {
+            background: linear-gradient(135deg, #55b5ed, #278bd0);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(85, 181, 237, 0.35);
+        }
+
+        .menu-icon {
+            width: 15px;
+            text-align: center;
+            font-size: 10px;
+        }
+
+        /* MAIN */
+
+        .main {
+            margin-left: 105px;
+            min-height: 100vh;
+            background: transparent;
+            padding: 30px 38px;
+        }
+
+        /* TOP */
+
+        .top-area {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 22px;
+        }
+
+        .page-title h1 {
+            font-size: 24px;
+            color: #243b53;
+            margin-bottom: 6px;
+        }
+
+        .page-title p {
+            font-size: 11px;
+            color: #71869b;
+        }
+
+        .add-btn {
+            border: none;
+            background: linear-gradient(135deg, #55b5ed, #278bd0);
+            color: #ffffff;
+            padding: 9px 16px;
+            border-radius: 5px;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.25s ease;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 18px rgba(85, 181, 237, 0.35);
+        }
+
+        /* SUCCESS / ERROR */
+
+        .success-message {
+            background: #ecfdf5;
+            color: #047857;
+            border: 1px solid #a7f3d0;
+            padding: 10px 13px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .error-message {
+            background: #fef2f2;
+            color: #b91c1c;
+            border: 1px solid #fecaca;
+            padding: 10px 13px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        /* VEHICLE CARD */
+
+        .vehicle-card {
+            background: #ffffff;
+            border: 1px solid #d5e7f4;
+            border-radius: 7px;
+            box-shadow: 0 4px 14px rgba(85, 145, 185, 0.10);
+            overflow: hidden;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 17px 18px;
+            border-bottom: 1px solid #dcebf5;
+        }
+
+        .card-header h2 {
+            font-size: 15px;
+            color: #243b53;
+        }
+
+        .vehicle-count {
+            font-size: 9px;
+            color: #435d76;
+            background: #eaf5ff;
+            padding: 5px 9px;
+            border-radius: 12px;
+        }
+
+        /* FORM */
+
+        .vehicle-form {
+            display: none;
+            margin: 18px;
+            padding: 18px;
+            background: #f2f8ff;
+            border: 1px solid #d5e7f4;
+            border-radius: 6px;
+        }
+
+        .vehicle-form.show {
+            display: block;
+        }
+
+        .form-title {
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 14px;
+            color: #243b53;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 9px;
+            font-weight: 600;
+            color: #435d76;
+            margin-bottom: 6px;
+        }
+
+        .field input {
+            width: 100%;
+            padding: 9px 10px;
+            border: 1px solid #b9dced;
+            border-radius: 5px;
+            outline: none;
+            background: #ffffff;
+            font-size: 10px;
+            color: #435d76;
+        }
+
+        .field input:focus {
+            border-color: #55b5ed;
+            box-shadow: 0 0 0 2px rgba(85, 181, 237, 0.12);
+        }
+
+        /* VEHICLE TYPE OPTIONS */
+
+        .vehicle-type-options {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .vehicle-option {
+            cursor: pointer;
+        }
+
+        .vehicle-option input {
+            display: none;
+        }
+
+        .vehicle-option span {
+            display: inline-block;
+            padding: 10px 15px;
+            border: 1px solid #b9dced;
+            border-radius: 6px;
+            background: #ffffff;
+            color: #435d76;
+            font-size: 11px;
+            transition: 0.25s ease;
+        }
+
+        .vehicle-option span:hover {
+            border-color: #278bd0;
+            background: #eaf5ff;
+        }
+
+        .vehicle-option input:checked + span {
+            background: #278bd0;
+            color: #ffffff;
+            border-color: #278bd0;
+            box-shadow: 0 4px 12px rgba(85, 181, 237, 0.3);
+        }
+
+        .save-btn {
+            margin-top: 14px;
+            border: none;
+            background: linear-gradient(135deg, #55b5ed, #278bd0);
+            color: white;
+            padding: 9px 17px;
+            border-radius: 5px;
+            font-size: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* TABLE */
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #eaf5ff;
+        }
+
+        th {
+            text-align: left;
+            color: #435d76;
+            font-size: 9px;
+            font-weight: 700;
+            padding: 12px 15px;
+            border-bottom: 1px solid #d5e7f4;
+        }
+
+        td {
+            padding: 13px 15px;
+            border-bottom: 1px solid #edf4fa;
+            font-size: 10px;
+            color: #536d85;
+        }
+
+        tbody tr:hover {
+            background: #f5faff;
+        }
+
+        .vehicle-number {
+            color: #243b53;
+            font-weight: 700;
+        }
+
+        .type-badge {
+            display: inline-block;
+            padding: 4px 9px;
+            border-radius: 12px;
+            background: #e5f3ff;
+            color: #278bd0;
+            font-size: 8px;
+            font-weight: 600;
+        }
+
+        /* ACTION BUTTONS */
+
+        .action-buttons {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .edit-btn {
+            font-size: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            color: #278bd0;
+        }
+
+        .delete-btn {
+            background: none;
+            border: none;
+            padding: 0;
+            color: #ef4444;
+            font-size: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .edit-btn:hover,
+        .delete-btn:hover {
+            text-decoration: underline;
+        }
+
+        /* NEXT BUTTON */
+
+        .booking-button-area {
+            display: flex;
+            justify-content: flex-end;
+            padding-top: 12px;
+        }
+
+        .book-parking-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #55b5ed, #278bd0);
+            color: #ffffff;
+            padding: 9px 16px;
+            border-radius: 5px;
+            font-size: 10px;
+            font-weight: 600;
+            transition: 0.25s ease;
+        }
+
+        .book-parking-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 18px rgba(85, 181, 237, 0.35);
+        }
+
+        /* EMPTY */
+
+        .empty {
+            text-align: center;
+            padding: 35px;
+            color: #8ba1b5;
+            font-size: 10px;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 700px) {
+
+            .sidebar {
+                width: 72px;
+            }
+
+            .sidebar-logo {
+                justify-content: center;
+            }
+
+            .sidebar-logo span {
+                display: none;
+            }
+
+            .sidebar-menu a {
+                justify-content: center;
+            }
+
+            .sidebar-menu a span:not(.menu-icon) {
+                display: none;
+            }
+
+            .main {
+                margin-left: 72px;
+                padding: 22px 15px;
+            }
+
+            .top-area {
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .page-title h1 {
+                font-size: 20px;
+            }
+
+            .add-btn {
+                white-space: nowrap;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .card-header {
+                padding: 14px;
+            }
+
+            th,
+            td {
+                white-space: nowrap;
+            }
+
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-logo">
+            <div class="sidebar-logo-icon">P</div>
+            <span>Smart Parking</span>
+        </div>
+
+        <div class="sidebar-menu">
+
+            <a href="{{ url_for('vehicles') }}" class="active">
+                <span class="menu-icon">🚗</span>
+                <span>My Vehicles</span>
+            </a>
+
+        </div>
+
+    </aside>
+
+    <!-- MAIN -->
+
+    <main class="main">
+
+        <div class="top-area">
+
+            <div class="page-title">
+                <h1>My Vehicles</h1>
+                <p>Manage your registered vehicles for parking.</p>
+            </div>
+
+            <button
+                type="button"
+                class="add-btn"
+                onclick="showForm()"
+            >
+                + Add Vehicle
+            </button>
+
+        </div>
+
+        <!-- SUCCESS -->
+
+        {% if request.args.get('success') == '1' %}
+            <div class="success-message">
+                Vehicle added successfully!
+            </div>
+        {% endif %}
+
+        <!-- ERROR -->
+
+        {% if request.args.get('error') == 'duplicate' %}
+            <div class="error-message">
+                This vehicle number already exists.
+            </div>
+        {% endif %}
+
+        <!-- VEHICLE CARD -->
+
+        <section class="vehicle-card">
+
+            <div class="card-header">
+
+                <h2>My Vehicles</h2>
+
+                {% if vehicles %}
+                    <span class="vehicle-count">
+                        {{ vehicles|length }} Vehicles
+                    </span>
+                {% else %}
+                    <span class="vehicle-count">
+                        0 Vehicles
+                    </span>
+                {% endif %}
+
+            </div>
+
+            <!-- ADD VEHICLE FORM -->
+
+            <form
+                class="vehicle-form"
+                id="vehicleForm"
+                method="POST"
+                action="{{ url_for('vehicles') }}"
+            >
+
+                <div class="form-title">
+                    Add New Vehicle
+                </div>
+
+                <div class="form-grid">
+
+                    <div class="field">
+
+                        <label for="vehicleNumber">
+                            Vehicle Number
+                        </label>
+
+                        <input
+                            type="text"
+                            id="vehicleNumber"
+                            name="vehicle_number"
+                            placeholder="e.g. MH12AB1234"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="field">
+
+                        <label>
+                            Select Vehicle Type
+                        </label>
+
+                        <div class="vehicle-type-options">
+
+                            <label class="vehicle-option">
+                                <input
+                                    type="radio"
+                                    name="vehicle_type"
+                                    value="Car"
+                                    required
+                                >
+                                <span>🚗 Car</span>
+                            </label>
+
+                            <label class="vehicle-option">
+                                <input
+                                    type="radio"
+                                    name="vehicle_type"
+                                    value="Bike"
+                                >
+                                <span>🏍️ Bike</span>
+                            </label>
+
+                            <label class="vehicle-option">
+                                <input
+                                    type="radio"
+                                    name="vehicle_type"
+                                    value="Scooter"
+                                >
+                                <span>🛵 Scooter</span>
+                            </label>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <button type="submit" class="save-btn">
+                    Save Vehicle
+                </button>
+
+            </form>
+
+            <!-- VEHICLE TABLE -->
+
+            <div class="table-wrapper">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Vehicle Number</th>
+                            <th>Vehicle Type</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% if vehicles %}
+
+                            {% for vehicle in vehicles %}
+
+                                <tr>
+
+                                    <td class="vehicle-number">
+                                        {{ vehicle[1] }}
+                                    </td>
+
+                                    <td>
+                                        <span class="type-badge">
+                                            {{ vehicle[2] }}
+                                        </span>
+                                    </td>
+
+                                    <td>
+
+                                        <div class="action-buttons">
+
+                                            <a href="#" class="edit-btn">
+                                                Edit
+                                            </a>
+
+                                            <form
+                                                action="{{ url_for('delete_vehicle', vehicle_id=vehicle[0]) }}"
+                                                method="POST"
+                                                style="display: inline;"
+                                                onsubmit="return confirm('Are you sure you want to delete this vehicle?');"
+                                            >
+
+                                                <button
+                                                    type="submit"
+                                                    class="delete-btn"
+                                                >
+                                                    Delete
+                                                </button>
+
+                                            </form>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            {% endfor %}
+
+                        {% else %}
+
+                            <tr>
+                                <td colspan="3" class="empty">
+                                    No vehicles added yet.
+                                </td>
+                            </tr>
+
+                        {% endif %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+        <!-- NEXT: GPS / LOCATION -->
+
+        <div class="booking-button-area">
+
+            <a
+                href="{{ url_for('location') }}"
+                class="book-parking-btn"
+            >
+                Next: GPS / Location →
+            </a>
+
+        </div>
+
+    </main>
+
+    <script>
+
+        function showForm() {
+
+            const form = document.getElementById("vehicleForm");
+
+            form.classList.toggle("show");
+
+        }
+
+    </script>
+
+</body>
+</html>
