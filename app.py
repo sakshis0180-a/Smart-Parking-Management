@@ -4,6 +4,7 @@ import math
 import os
 from dotenv import load_dotenv
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
 
 load_dotenv()
 
@@ -21,9 +22,99 @@ def get_db_connection():
         user=os.getenv("DB_USER"),
         password=os.getenv("DB_PASSWORD"),
         host=os.getenv("DB_HOST"),
-        port=os.getenv("DB_PORT", "5432")
+        port=os.getenv("DB_PORT", "5432"),
+        options="-c search_path=public"
     )
 
+# =========================================================
+# DATABASE TABLE INITIALIZATION
+# =========================================================
+
+def init_db():
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+
+        # USERS TABLE
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS users (
+                id SERIAL PRIMARY KEY,
+                fullname VARCHAR(150) NOT NULL,
+                email VARCHAR(255) NOT NULL,
+                username VARCHAR(100) NOT NULL,
+                password TEXT NOT NULL
+            )
+        """)
+
+        # UNIQUE USERNAME AND EMAIL
+        cursor.execute("""
+            CREATE UNIQUE INDEX IF NOT EXISTS
+            unique_username_lower
+            ON users (LOWER(username))
+        """)
+
+        cursor.execute("""
+            CREATE UNIQUE INDEX IF NOT EXISTS
+            unique_email_lower
+            ON users (LOWER(email))
+        """)
+
+        # VEHICLES TABLE
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS vehicles (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL
+                    REFERENCES users(id),
+                vehicle_number VARCHAR(30) NOT NULL UNIQUE,
+                vehicle_type VARCHAR(50) NOT NULL
+            )
+        """)
+
+        # PARKING SLOTS TABLE
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS parking_slots (
+                id SERIAL PRIMARY KEY,
+                slot_number VARCHAR(20) NOT NULL UNIQUE,
+                status VARCHAR(30) NOT NULL DEFAULT 'Available',
+                vehicle_number VARCHAR(30)
+            )
+        """)
+
+        # BOOKINGS TABLE
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS bookings (
+                id SERIAL PRIMARY KEY,
+                user_id INTEGER NOT NULL
+                    REFERENCES users(id),
+                vehicle_id INTEGER NOT NULL
+                    REFERENCES vehicles(id),
+                slot_id INTEGER NOT NULL
+                    REFERENCES parking_slots(id),
+                booking_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                entry_time TIMESTAMP,
+                exit_time TIMESTAMP,
+                fee NUMERIC(10, 2) DEFAULT 20,
+                status VARCHAR(50) NOT NULL
+            )
+        """)
+
+        conn.commit()
+
+        print("Database tables created successfully!")
+
+    except Exception:
+        conn.rollback()
+        raise
+
+    finally:
+        cursor.close()
+        conn.close()
+
+
+# CREATE TABLES WHEN APPLICATION STARTS
+init_db() 
 
 # =========================================================
 # HOME
@@ -79,7 +170,7 @@ def login():
         cursor.close()
         conn.close()
 
-        if user is not None and str(user[3]) == password:
+        if user is not None and check_password_hash(user[3], password):
 
             session["user_id"] = user[0]
             session["username"] = user[2]
@@ -161,7 +252,7 @@ def register():
                     fullname,
                     email,
                     username,
-                    password
+                     generate_password_hash(password)
                 )
             )
 
