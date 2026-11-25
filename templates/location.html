@@ -248,16 +248,28 @@ a{text-decoration:none}
 
 .detect-btn{
     position:absolute;
-    top:15px;right:15px;
-    z-index:500;
+    top:15px;
+    right:15px;
+    z-index:1000;
     border:none;
     background:#278bd0;
     color:white;
-    padding:9px 12px;
+    padding:11px 14px;
     border-radius:5px;
-    font-size:9px;
+    font-size:11px;
     font-weight:600;
     cursor:pointer;
+    pointer-events:auto;
+    touch-action:manipulation;
+}
+
+.detect-btn:hover{
+    background:#1679bd;
+}
+
+.detect-btn:disabled{
+    background:#94a3b8;
+    cursor:wait;
 }
 
 .detect-btn:hover{background:#1679bd}
@@ -351,6 +363,30 @@ a{text-decoration:none}
     }
     .detect-btn{top:10px;right:10px}
 }
+.directions-panel{
+    margin-top:10px;
+    padding:10px;
+    background:#edf7ff;
+    border-radius:5px;
+    max-height:180px;
+    overflow-y:auto;
+}
+
+.directions-panel strong{
+    font-size:10px;
+}
+
+.directions-panel ol{
+    padding-left:18px;
+    margin-top:8px;
+}
+
+.directions-panel li{
+    font-size:9px;
+    color:#475569;
+    line-height:1.6;
+    margin-bottom:5px;
+}
 </style>
 </head>
 
@@ -411,6 +447,10 @@ a{text-decoration:none}
                 <strong id="selectedName"></strong>
                 <p id="selectedDistance"></p>
             </div>
+            <div class="directions-panel" id="directionsPanel" style="display:none">
+    <strong>🧭 Driving Directions</strong>
+    <ol id="directionsList"></ol>
+</div>
 
             <button
                 type="button"
@@ -458,9 +498,17 @@ L.tileLayer(
     }
 ).addTo(map);
 
-setTimeout(function(){
-    map.invalidateSize();
-},300);
+window.addEventListener("load",function(){
+
+    setTimeout(function(){
+        map.invalidateSize(true);
+    },500);
+
+});
+
+window.addEventListener("resize",function(){
+    map.invalidateSize(true);
+});
 
 
 // Map icons
@@ -493,6 +541,8 @@ let searching = false;
 let lastSearchLocation = null;
 let watchId = null;
 
+// Parking slots received from PostgreSQL
+const databaseParkingSlots = {{ parking_slots | tojson }};
 
 // HTML elements
 
@@ -562,12 +612,17 @@ function clearParkingMarkers(){
     selectedParking = null;
 
     selectedInfo.style.display = "none";
+
+    document.getElementById("directionsPanel").style.display = "none";
+    document.getElementById("directionsList").innerHTML = "";
+
     navigationButton.disabled = true;
 
     if(routeLine){
         map.removeLayer(routeLine);
         routeLine = null;
     }
+   
 }
 
 
@@ -577,44 +632,81 @@ function displayParkingList(){
 
     parkingList.innerHTML = "";
 
+    // OpenStreetMap parking locations
+    const osmHeading = document.createElement("h4");
+    osmHeading.textContent = "Nearby Map Parking";
+    parkingList.appendChild(osmHeading);
+
     if(parkingLocations.length === 0){
-        parkingList.innerHTML =
-            '<p class="coordinates">No mapped parking locations found.</p>';
-        return;
+
+        const empty = document.createElement("p");
+        empty.className = "coordinates";
+        empty.textContent = "No mapped parking locations found.";
+        parkingList.appendChild(empty);
+
+    }else{
+
+        parkingLocations.slice(0,30).forEach(function(parking){
+
+            const item = document.createElement("div");
+            item.className = "parking-item";
+
+            if(selectedParking && selectedParking.id === parking.id){
+                item.classList.add("selected");
+            }
+
+            const left = document.createElement("div");
+            left.className = "parking-left";
+
+            const dot = document.createElement("span");
+            dot.className = "parking-dot";
+
+            const name = document.createElement("span");
+            name.className = "parking-name";
+            name.textContent = parking.name;
+
+            const distance = document.createElement("span");
+            distance.className = "parking-distance";
+            distance.textContent = formatDistance(parking.distance);
+
+            left.appendChild(dot);
+            left.appendChild(name);
+
+            item.appendChild(left);
+            item.appendChild(distance);
+
+            item.addEventListener("click",function(){
+                selectParking(parking);
+            });
+
+            parkingList.appendChild(item);
+        });
     }
 
-    parkingLocations.slice(0,30).forEach(function(parking){
+    // PostgreSQL parking slot availability
+    const dbHeading = document.createElement("h4");
+    dbHeading.style.marginTop = "15px";
+    dbHeading.textContent = "Our Parking Slot Availability";
+    parkingList.appendChild(dbHeading);
+
+    databaseParkingSlots.forEach(function(slot){
 
         const item = document.createElement("div");
         item.className = "parking-item";
 
-        if(selectedParking && selectedParking.id === parking.id){
-            item.classList.add("selected");
-        }
-
-        const left = document.createElement("div");
-        left.className = "parking-left";
-
-        const dot = document.createElement("span");
-        dot.className = "parking-dot";
-
         const name = document.createElement("span");
         name.className = "parking-name";
-        name.textContent = parking.name;
+        name.textContent = "Slot " + slot[1];
 
-        const distance = document.createElement("span");
-        distance.className = "parking-distance";
-        distance.textContent = formatDistance(parking.distance);
+        const status = document.createElement("span");
+        status.className = "parking-distance";
+        status.textContent = slot[2];
 
-        left.appendChild(dot);
-        left.appendChild(name);
+        status.style.color =
+            slot[2] === "Available" ? "green" : "red";
 
-        item.appendChild(left);
-        item.appendChild(distance);
-
-        item.addEventListener("click",function(){
-            selectParking(parking);
-        });
+        item.appendChild(name);
+        item.appendChild(status);
 
         parkingList.appendChild(item);
     });
@@ -633,6 +725,8 @@ function selectParking(parking){
         map.removeLayer(routeLine);
         routeLine = null;
     }
+        document.getElementById("directionsPanel").style.display = "none";
+    document.getElementById("directionsList").innerHTML = "";
 
     selectedName.textContent = parking.name;
 
@@ -728,20 +822,20 @@ async function loadNearbyParking(){
     // Search several common OSM parking tags.
 
     const query = `
-        [out:json][timeout:35];
+        [out:json][timeout:60];
         (
-          node["amenity"="parking"](around:20000,${lat},${lng});
-          way["amenity"="parking"](around:20000,${lat},${lng});
-          relation["amenity"="parking"](around:20000,${lat},${lng});
+          node["amenity"="parking"](around:50000,${lat},${lng});
+          way["amenity"="parking"](around:50000,${lat},${lng});
+          relation["amenity"="parking"](around:50000,${lat},${lng});
 
-          node["parking"="surface"](around:20000,${lat},${lng});
-          way["parking"="surface"](around:20000,${lat},${lng});
+          node["parking"="surface"](around:50000,${lat},${lng});
+          way["parking"="surface"](around:50000,${lat},${lng});
 
-          node["parking"="underground"](around:20000,${lat},${lng});
-          way["parking"="underground"](around:20000,${lat},${lng});
+          node["parking"="underground"](around:50000,${lat},${lng});
+          way["parking"="underground"](around:50000,${lat},${lng});
 
-          node["parking"="multi-storey"](around:20000,${lat},${lng});
-          way["parking"="multi-storey"](around:20000,${lat},${lng});
+          node["parking"="multi-storey"](around:50000,${lat},${lng});
+          way["parking"="multi-storey"](around:50000,${lat},${lng});
         );
         out center tags;
     `;
@@ -834,8 +928,7 @@ async function loadNearbyParking(){
             mapStatus.innerText =
                 "No mapped parking found within 20 km.";
 
-            parkingList.innerHTML =
-                '<p class="coordinates">No parking areas are mapped in OpenStreetMap within 20 km. This does not mean real parking areas do not exist.</p>';
+            displayParkingList();
 
         }else{
 
@@ -864,10 +957,9 @@ async function loadNearbyParking(){
         console.error("Parking search error:",error);
 
         mapStatus.innerText =
-            "Parking service unavailable. Please try again.";
+            "Parking search error: " + error.message;
 
-        parkingList.innerHTML =
-            '<p class="coordinates">Could not connect to OpenStreetMap parking search. Check your internet and retry.</p>';
+        displayParkingList();
 
     }finally{
 
@@ -959,22 +1051,23 @@ function updateCurrentLocation(position){
 function getLocation(){
 
     if(!navigator.geolocation){
-
         mapStatus.innerText =
-            "Your browser does not support GPS location.";
+            "GPS is not supported by your browser.";
+        return;
+    }
 
+    // GPS requires HTTPS or localhost.
+    if(!window.isSecureContext){
+        mapStatus.innerText =
+            "GPS requires a secure HTTPS connection.";
         return;
     }
 
     detectButton.disabled = true;
     detectButton.textContent = "Detecting GPS...";
 
-    locationText.innerText =
-        "Requesting your current location...";
-
-    mapStatus.innerText =
-        "Waiting for GPS permission...";
-
+    locationText.innerText = "Detecting your location...";
+    mapStatus.innerText = "Waiting for GPS permission...";
 
     navigator.geolocation.getCurrentPosition(
 
@@ -984,27 +1077,36 @@ function getLocation(){
 
             map.setView(currentLocation,16);
 
-            userMarker.openPopup();
+            if(userMarker){
+                userMarker.openPopup();
+            }
 
+            // Start live tracking immediately.
+            startLiveLocation();
+
+            // Search nearby parking.
             await loadNearbyParking();
 
             detectButton.disabled = false;
             detectButton.textContent = "📍 Use My Location";
+
         },
 
         function(error){
 
-            let message = "Unable to detect your location.";
+            let message = "Unable to detect location.";
 
             if(error.code === 1){
                 message =
-                    "Location permission denied. Allow location in Chrome.";
-            }else if(error.code === 2){
+                    "Location permission denied. Allow GPS permission in browser settings.";
+            }
+            else if(error.code === 2){
                 message =
-                    "Location unavailable. Check Windows location settings.";
-            }else if(error.code === 3){
+                    "Location unavailable. Check your phone GPS.";
+            }
+            else if(error.code === 3){
                 message =
-                    "Location request timed out. Try again.";
+                    "GPS timeout. Please try again.";
             }
 
             locationText.innerText = message;
@@ -1012,11 +1114,12 @@ function getLocation(){
 
             detectButton.disabled = false;
             detectButton.textContent = "📍 Use My Location";
+
         },
 
         {
             enableHighAccuracy:true,
-            timeout:60000,
+            timeout:120000,
             maximumAge:0
         }
     );
@@ -1074,7 +1177,7 @@ async function startNavigation(){
 
     if(!currentLocation || !selectedParking){
         mapStatus.innerText =
-            "First detect your location and select a parking area.";
+            "Detect your location and select a parking area first.";
         return;
     }
 
@@ -1092,7 +1195,7 @@ async function startNavigation(){
     const routeURL =
         "https://router.project-osrm.org/route/v1/driving/"+
         start+";"+end+
-        "?overview=full&geometries=geojson";
+        "?overview=full&geometries=geojson&steps=true";
 
     try{
 
@@ -1104,7 +1207,7 @@ async function startNavigation(){
 
         const data = await response.json();
 
-        if(!data.routes || !data.routes.length){
+        if(data.code !== "Ok" || !data.routes.length){
             throw new Error("No driving route found");
         }
 
@@ -1125,32 +1228,67 @@ async function startNavigation(){
             opacity:.9
         }).addTo(map);
 
-        const roadDistance =
-            (route.distance/1000).toFixed(2);
-
-        const minutes =
-            Math.ceil(route.duration/60);
-
         map.fitBounds(routeLine.getBounds(),{
             padding:[60,60]
         });
 
-        mapStatus.innerText =
-            "Road distance: "+roadDistance+
-            " km | Estimated time: "+minutes+" minutes";
+        const roadDistance = (route.distance/1000).toFixed(2);
+        const minutes = Math.ceil(route.duration/60);
 
         selectedDistance.textContent =
             "Road distance: "+roadDistance+
             " km | Estimated time: "+minutes+" minutes";
 
-    }catch(error){
+        // Display turn-by-turn directions
+
+        const directionsPanel =
+            document.getElementById("directionsPanel");
+
+        const directionsList =
+            document.getElementById("directionsList");
+
+        directionsList.innerHTML = "";
+
+        const steps = route.legs[0].steps;
+
+        steps.forEach(function(step){
+
+            const maneuver = step.maneuver || {};
+
+            let instruction = maneuver.type || "Continue";
+
+            if(maneuver.modifier){
+                instruction += " "+maneuver.modifier;
+            }
+
+            if(step.name){
+                instruction += " onto "+step.name;
+            }
+
+            instruction +=
+                " ("+(step.distance/1000).toFixed(2)+" km)";
+
+            const li = document.createElement("li");
+            li.textContent = instruction;
+
+            directionsList.appendChild(li);
+        });
+
+        directionsPanel.style.display = "block";
+
+        mapStatus.innerText =
+            "Route ready! "+roadDistance+
+            " km | Approximately "+minutes+" minutes.";
+
+    }
+    catch(error){
 
         console.error("Navigation error:",error);
 
         mapStatus.innerText =
             "Driving route unavailable. Please try again.";
-
-    }finally{
+    }
+    finally{
 
         navigationButton.disabled = false;
         navigationButton.textContent = "Start Navigation";

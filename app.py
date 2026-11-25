@@ -72,14 +72,23 @@ def init_db():
             )
         """)
 
-        # PARKING SLOTS TABLE
+                # PARKING SLOTS TABLE
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS parking_slots (
                 id SERIAL PRIMARY KEY,
                 slot_number VARCHAR(20) NOT NULL UNIQUE,
                 status VARCHAR(30) NOT NULL DEFAULT 'Available',
-                vehicle_number VARCHAR(30)
+                vehicle_number VARCHAR(30),
+                latitude DOUBLE PRECISION,
+                longitude DOUBLE PRECISION
             )
+        """)
+
+        # ADD GPS COORDINATES TO EXISTING TABLE
+        cursor.execute("""
+            ALTER TABLE parking_slots
+            ADD COLUMN IF NOT EXISTS latitude DOUBLE PRECISION,
+            ADD COLUMN IF NOT EXISTS longitude DOUBLE PRECISION
         """)
 
         # BOOKINGS TABLE
@@ -131,7 +140,36 @@ def home():
 
 @app.route("/location")
 def location():
-    return render_template("location.html")
+
+    if not session.get("user_id"):
+        return redirect(url_for("login"))
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        # GET PARKING SLOTS WITH GPS COORDINATES
+        cursor.execute("""
+            SELECT
+                id,
+                slot_number,
+                status,
+                latitude,
+                longitude
+            FROM parking_slots
+            ORDER BY slot_number
+        """)
+
+        parking_slots = cursor.fetchall()
+
+        return render_template(
+            "location.html",
+            parking_slots=parking_slots
+        )
+
+    finally:
+        cursor.close()
+        conn.close()
 
 
 # =========================================================
